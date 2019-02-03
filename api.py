@@ -1,10 +1,17 @@
 from dataclasses import dataclass
 from typing import List
+from enum import Enum
+
+
+class Color(Enum):
+    WHITE = 0
+    BLACK = 1
 
 
 @dataclass
 class Card:
     value: int
+    color: Color
     revealed: bool
 
 
@@ -19,6 +26,7 @@ class Player:
 class State:
     player_turn: str  # which player causes the state change
     players: List[Player]
+    action: Action  # which 
 
 
 class Action:
@@ -45,6 +53,7 @@ def state_stream(state: State):
 def action():
     # called when the user has to do an action 
     # (all previous states are accessible by the "state_stream" callback)
+    # Note: how many cards on the deck remain is implicit (user has to keep track of that)
 
     # return: an instance of <Action>
 """
