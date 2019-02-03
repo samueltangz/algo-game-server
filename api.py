@@ -30,7 +30,7 @@ class Action:
 class State:
     player_turn: str  # which player causes the state change
     players: List[Player]
-    action: Action  # which 
+    action: Action  # action taken by that player
 
 
 class StayAction(Action):
@@ -42,6 +42,7 @@ class AttackAction(Action):
     target_player: str
     card_index: int  # the n'th rank (0 based, 0 rank is the smallest card) card of the target player
     guess: int
+    card_to_use: Card  # must use the new card added or if no card is added, user has to choose 1 of his unrevealed card
 
 
 """ API to be implemented by user """
