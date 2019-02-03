@@ -10,7 +10,7 @@ class Color(Enum):
 
 @dataclass
 class Card:
-    value: int
+    value: int  # card value is -1 for other player's unrevealed card
     color: Color
     revealed: bool
 
