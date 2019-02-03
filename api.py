@@ -22,15 +22,15 @@ class Player:
     cards: List[Card]  # algo-ordered
 
 
+class Action:
+    pass
+
+
 @dataclass
 class State:
     player_turn: str  # which player causes the state change
     players: List[Player]
     action: Action  # which 
-
-
-class Action:
-    pass
 
 
 class StayAction(Action):
