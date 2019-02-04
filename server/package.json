@@ -1,0 +1,19 @@
+{
+  "name": "algo-server",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "db-migrate": "^0.11.5",
+    "db-migrate-mysql": "^1.1.10",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  },
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
