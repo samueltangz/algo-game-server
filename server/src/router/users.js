@@ -16,10 +16,18 @@ api.get('/me', getUserFromAuthnToken,
 
 api.get('/top10',
   async (req, res) => {
-    const users = await listTopTen()
-    return res.status(200).json({
-      'users': users
-    })
+    try {
+      const users = await listTopTen()
+      return res.status(200).json({
+        'users': users
+      })
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': 'unexpected error'
+      }).end()
+    }
   }
 )
+
 module.exports = api

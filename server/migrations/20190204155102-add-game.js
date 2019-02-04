@@ -16,8 +16,14 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db, callback) {
   db.createTable('games', {
-    id: { type: 'int', primaryKey: true, autoIncrement: true },
-    card_pile: { type: 'string', length: 1024, notNull: true }
+    'id': { type: 'int', primaryKey: true, autoIncrement: true },
+    'card_pile': { type: 'string', length: 1024, notNull: true },
+    'status': { type: 'int', defaultValue: 0 },
+    'player_1': { type: 'int' },
+    'player_2': { type: 'int' },
+    'player_3': { type: 'int' },
+    'player_4': { type: 'int' },
+    'player_ready_status': { type: 'int', defaultValue: 0 }
   }, callback)
 }
 
