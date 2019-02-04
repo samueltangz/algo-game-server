@@ -11,9 +11,11 @@
     "mysql": "^2.16.0"
   },
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js",
+    "test": "jest"
   },
   "devDependencies": {
+    "jest": "^24.0.0",
     "nodemon": "^1.18.9"
   }
 }

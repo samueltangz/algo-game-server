@@ -4,13 +4,11 @@ const bodyParser = require('body-parser')
 
 const { config } = require('./config')
 const router = require('./router')
-const { getUserFromAuthnToken } = require('./utils/express_middlewares')
 
 const app = express()
 
 // Application endpoints
 app.use(bodyParser.json())
-app.use(getUserFromAuthnToken)
 app.use('/', router)
 
 app.listen(config.port, function () {

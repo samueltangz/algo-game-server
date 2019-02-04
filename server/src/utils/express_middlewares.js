@@ -13,16 +13,15 @@ const getUserFromAuthnToken = async function (req, res, next) {
     })
   }
   const authnToken = token.substr(7)
-  const user = await findUserByToken(authnToken)
-  console.log(user
-    )
-  if (!user) {
+  try {
+    const user = await findUserByToken(authnToken)
+    res.locals.user = user
+    next()
+  } catch (err) {
     return res.status(403).json({
       'error': 'user not found'
     })
   }
-  res.locals.user = user
-  next()
 }
 
 module.exports = {
