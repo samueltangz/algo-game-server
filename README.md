@@ -1,1 +1,1 @@
-# algo-bots
+# algo-game-server
