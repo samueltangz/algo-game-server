@@ -1,6 +1,6 @@
 const express = require('express')
 
-const { getUserFromAuthnToken } = require('./../utils/express_middlewares')
+const { getUserFromAuthnToken } = require('../utils/middlewares')
 const { listTopTen } = require('./../model/users')
 
 const api = express.Router()

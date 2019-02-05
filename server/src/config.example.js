@@ -1,5 +1,6 @@
 config = {
-  port: 3000,
+  portAPI: 3000,
+  portSocket: 3001,
   mysql: {
     host: 'localhost',
     user: 'algo-dev',

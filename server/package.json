@@ -8,7 +8,8 @@
     "db-migrate": "^0.11.5",
     "db-migrate-mysql": "^1.1.10",
     "express": "^4.16.4",
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "socket.io": "^2.2.0"
   },
   "scripts": {
     "start": "nodemon src/index.js",

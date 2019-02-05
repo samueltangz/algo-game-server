@@ -1,12 +1,15 @@
 /**
- * [ ] create a new game (shuffle)
- * [ ] list games
+ * LOBBY APIs
+ * [V] create a new game
+ * [V] list games
  * [V] join game
  * [V] leave game
  * [V] ready game
+ * [V] unready game
+ *
+ * GAME APIs
  * [ ] deal a card
  * [ ] pick an action
- * 
  */
 
 const gameStatus = {
@@ -15,7 +18,14 @@ const gameStatus = {
   FINISHED: 2
 }
 
-async function findOpenGamesByUserId (user_id) {
+/**
+ * .-.    .----. .----. .----..-.  .-.
+ * | |   /  {}  \| {}  }| {}  }\ \/ / 
+ * | `--.\      /| {}  }| {}  } }  {  
+ * `----' `----' `----' `----'  `--' 
+ */
+
+ async function findOpenGamesByUserId (user_id) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM games WHERE (player_1 = ? OR player_2 = ? OR player_3 = ? OR player_4 = ?) AND status != ?',
       [user_id, user_id, user_id, user_id, gameStatus.FINISHED],
@@ -37,11 +47,26 @@ async function findGameById (id) {
   })
 }
 
-async function createGame () {
+async function findGamesByStatus (status) {
   return new Promise((resolve, reject) => {
-    con.query('INSERT INTO games () VALUES ()', [], function (err, games, _) {
+    con.query('SELECT * FROM games WHERE status = ?', [ status ], function (err, games, _) {
       if (err) return reject(err)
       resolve(games)
+    })
+  })
+}
+
+async function createGame (user_id) {
+  const [ gamesPlayersIn, gamesWaiting ] = await Promise.all([
+    findOpenGamesByUserId(user_id), findGamesByStatus(gameStatus.WAITING)
+  ])
+  if (gamesPlayersIn.length > 0) throw new Error(`user is already in game room #${gamesPlayersIn[0].id}`)
+  if (gamesWaiting.length >= 10) throw new Error('too much waiting game rooms')
+  return new Promise((resolve, reject) => {
+    con.query(`INSERT INTO games (id, card_pile, status, player_1, player_2, player_3, player_4, player_ready_status)
+      VALUES (NULL, '', ?, ?, NULL, NULL, NULL, 0)`, [ gameStatus.WAITING, user_id ], function (err, _) {
+      if (err) return reject(err)
+      resolve()
     })
   })
 }
@@ -127,7 +152,20 @@ async function unreadyGame (user_id) {
   }
 }
 
+/**
+ *  .---.   .--.  .-.   .-..----.     
+ * /   __} / {} \ |  `.'  || {_       
+ * \  {_ }/  /\  \| |\ /| || {__      
+ *  `---' `-'  `-'`-' ` `-'`----'
+ */
+
+
 module.exports = {
+  gameStatus,
+
+  findOpenGamesByUserId,
+  findGameById,
+  findGamesByStatus,
   createGame,
   joinGame,
   leaveGame,

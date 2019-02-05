@@ -1,4 +1,4 @@
-const { findUserByToken } = require('./../model/users')
+const { findUserByToken } = require('../model/users')
 
 const getUserFromAuthnToken = async function (req, res, next) {
   if (!req.headers || !req.headers.authorization) {
