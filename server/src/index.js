@@ -2,7 +2,7 @@ const express = require('express')
 const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const http = require('http')
-const socket = require('socket.io')
+// const socket = require('socket.io')
 const { config } = require('./config')
 const router = require('./router')
 
@@ -17,7 +17,7 @@ app.listen(config.portAPI, function () {
 
 // Socket
 const server = http.createServer(app)
-const io = socket(server)
+// const io = socket(server)
 
 server.listen(config.portSocket, function () {
   console.log(`Socket server listening on port ${config.portSocket}`)
