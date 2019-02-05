@@ -38,7 +38,7 @@ async function leaveRoom (userId) {
   return new Promise((resolve, reject) => {
     con.query('DELETE FROM rooms_users WHERE room_id = ? AND user_id = ? LIMIT 1', [ roomId, userId ], function (err, result) {
       if (err) return reject(err)
-      if (result.changedRows !== 1) return reject(new Error('cannot leave room'))
+      if (result.affectedRows !== 1) return reject(new Error('cannot leave room'))
       resolve()
     })
   })
