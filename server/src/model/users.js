@@ -1,3 +1,5 @@
+/* global con */
+
 async function findUserById (id) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM users WHERE id = ? LIMIT 1', [ id ], function (err, users, _) {

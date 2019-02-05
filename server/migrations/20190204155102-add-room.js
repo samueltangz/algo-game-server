@@ -15,16 +15,14 @@ exports.setup = function (options, seedLink) {
 }
 
 exports.up = function (db, callback) {
-  db.createTable('users', {
-    id: { type: 'int', primaryKey: true, autoIncrement: true },
-    name: { type: 'string', notNull: true },
-    token: { type: 'string', notNull: true },
-    rating: { type: 'int', defaultValue: 1500 }
+  db.createTable('rooms', {
+    'id': { type: 'int', primaryKey: true, autoIncrement: true },
+    'status': { type: 'int', defaultValue: 0 }
   }, callback)
 }
 
 exports.down = function (db, callback) {
-  db.dropTable('users', callback)
+  db.dropTable('rooms', callback)
 }
 
 exports._meta = {

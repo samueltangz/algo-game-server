@@ -1,7 +1,7 @@
 /**
  * Random between [l, r)
- * @param {number} l 
- * @param {number} r 
+ * @param {number} l
+ * @param {number} r
  * @return a random number between [l, r).
  */
 const randBetween = function (l, r) {

@@ -1,4 +1,4 @@
-config = {
+const config = {
   portAPI: 3000,
   portSocket: 3001,
   mysql: {
