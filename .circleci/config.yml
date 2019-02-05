@@ -42,6 +42,6 @@ workflows:
   build:
     jobs:
       - prepare
-      - test_back_end:
+      - test_server:
           requires:
           - prepare
