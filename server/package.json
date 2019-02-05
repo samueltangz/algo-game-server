@@ -14,8 +14,7 @@
   "scripts": {
     "start": "nodemon src/index.js",
     "test": "jest",
-    "lint": "eslint src",
-    "lint_": "eslint --init"
+    "lint": "eslint src"
   },
   "devDependencies": {
     "eslint": "^5.13.0",
