@@ -29,6 +29,11 @@ async function joinRoom (userId, roomId) {
   })
 }
 
+/**
+ * The given user leaves the current room
+ * @param {*} userId
+ * @returns the room id left
+ */
 async function leaveRoom (userId) {
   const roomsJoined = await findOpenRoomsByUserId(userId)
   if (roomsJoined.length === 0) throw new Error('user is not in a room')
@@ -39,7 +44,7 @@ async function leaveRoom (userId) {
     con.query('DELETE FROM rooms_users WHERE room_id = ? AND user_id = ? LIMIT 1', [ roomId, userId ], function (err, result) {
       if (err) return reject(err)
       if (result.affectedRows !== 1) return reject(new Error('cannot leave room'))
-      resolve()
+      resolve(roomId)
     })
   })
 }
