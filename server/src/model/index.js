@@ -1,7 +1,7 @@
 /* global con */
 
 const {
-  findRoomsByUserId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
+  findRoomsByUserId, findRoomsUsersByRoomId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
 } = require('./rooms_users')
 const {
   roomStatus, roomStatusToString, createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
@@ -44,6 +44,7 @@ module.exports = {
 
   // rooms_users
   findRoomsByUserId,
+  findRoomsUsersByRoomId,
   findRoomsUsersByUserIdAndRoomId,
   joinRoom,
   leaveRoom,

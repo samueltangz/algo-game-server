@@ -14,6 +14,15 @@ async function findRoomsByUserId (userId) {
   })
 }
 
+async function findRoomsUsersByRoomId (roomId) {
+  return new Promise((resolve, reject) => {
+    con.query('SELECT * FROM rooms_users WHERE room_id = ?', [ roomId ], function (err, roomsUsers, _) {
+      if (err) return reject(err)
+      resolve(roomsUsers)
+    })
+  })
+}
+
 async function findRoomsUsersByUserIdAndRoomId (userId, roomId) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM rooms_users WHERE user_id = ? AND room_id = ?', [ userId, roomId ], function (err, roomsUsers, _) {
@@ -58,6 +67,7 @@ async function updateReady (userId, roomId, isReady) {
 
 module.exports = {
   findRoomsByUserId,
+  findRoomsUsersByRoomId,
   findRoomsUsersByUserIdAndRoomId,
 
   joinRoom,

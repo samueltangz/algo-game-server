@@ -41,6 +41,7 @@ async function joinRoom (user, roomId) {
     ])
     if (roomsJoined.length > 0) throw new Error('user has joined another room')
     if (roomToJoin['user_count'] >= config.roomSize) throw new Error('room is full')
+    if (roomToJoin['status'] !== model.roomStatus.WAITING) throw new Error('room is not available for joining')
 
     // Join room
     const [ , room ] = await Promise.all([
@@ -66,6 +67,7 @@ async function leaveRoom (user) {
     const { 'id': userId, 'name': username } = user
     const roomsJoined = await model.findRoomsByUserId(userId)
     if (roomsJoined.length === 0) throw new Error('user is not in a room')
+    if (roomsJoined[0]['status'] !== model.roomStatus.WAITING) throw new Error('room is not available for leaving')
 
     const roomId = roomsJoined[0]['id']
     const roomsUsers = await model.findRoomsUsersByUserIdAndRoomId(userId, roomId)
@@ -101,6 +103,7 @@ async function updateReady (user, isReady) {
     const { 'id': userId, 'name': username } = user
     const roomsJoined = await model.findRoomsByUserId(userId)
     if (roomsJoined.length === 0) throw new Error('user is not in a room')
+    // if (roomsJoined[0]['status'] !== model.roomStatus.WAITING) throw new Error('ready status cannot be changed')
 
     const roomId = roomsJoined[0]['id']
     const roomsUsers = await model.findRoomsUsersByUserIdAndRoomId(userId, roomId)
@@ -109,7 +112,7 @@ async function updateReady (user, isReady) {
     if (intToBoolean(roomsUsers[0]['is_ready']) === isReady) throw new Error('ready status will not be changed')
 
     // Update ready status
-    const [ , room ] = await Promise.all([
+    let [ , room ] = await Promise.all([
       model.updateReady(userId, roomId, isReady),
       model.deltaReadyUserCount(roomId, isReady ? 1 : -1)
     ])
@@ -121,7 +124,7 @@ async function updateReady (user, isReady) {
     }
 
     if (room['user_count'] === room['ready_user_count'] && room['user_count'] >= 2) {
-      model.updateRoomStatus(roomId, model.roomStatus.PREPARE)
+      room = await model.updateRoomStatus(roomId, model.roomStatus.PREPARE)
       queue.create('initialize_game', { roomId }).save()
     }
 
