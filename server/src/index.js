@@ -29,6 +29,7 @@ server.listen(config.portSocket, function () {
 
 io.on('connection', function (socket) {
   socket.on('token', function (token) {
+    console.log(`checking token ${token}`)
     socketAPI.token(socket, token)
   })
 })

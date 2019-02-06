@@ -33,11 +33,9 @@ async function joinRoom (user, roomId) {
       })
     })
   } catch (err) {}
-  roomBroadcast(roomId, `${user} joins room #${roomId}`)
 }
 
 async function leaveRoom (user, roomId) {
-  roomBroadcast(roomId, `${user} left room #${roomId}`)
   try {
     await new Promise(function (resolve, reject) {
       getSocketByUser(user).leave(`room/${roomId}`, function () {

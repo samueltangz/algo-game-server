@@ -1,27 +1,22 @@
 const express = require('express')
 
 const { getUserFromAuthnToken } = require('../utils/middlewares')
-const socket = require('../utils/socket')
-const { createRoom } = require('./../model/rooms')
-const { joinRoom, leaveRoom, updateReady } = require('./../model/rooms_users')
+const { createAndJoinRoom, joinRoom, leaveRoom, updateReady } = require('../helpers/rooms')
 
 const api = express.Router()
 
 api.post('/', getUserFromAuthnToken,
   async (req, res) => {
     try {
-      const userId = res.locals.user.id
-      const username = res.locals.user.name
-      const room = await createRoom()
-      await joinRoom(userId, room.id)
-      await socket.joinRoom(username, room.id)
+      const user = res.locals.user
+      const room = await createAndJoinRoom(user)
       return res.status(200).json({
         'room': room
       })
     } catch (err) {
       console.error(err)
       return res.status(500).json({
-        'error': 'unexpected error'
+        'error': err.message
       }).end()
     }
   }
@@ -30,16 +25,16 @@ api.post('/', getUserFromAuthnToken,
 api.post('/join/:id(\\d+)', getUserFromAuthnToken,
   async (req, res) => {
     try {
-      const userId = res.locals.user.id
-      const username = res.locals.user.name
+      const user = res.locals.user
       const roomId = parseInt(req.params.id, 10)
-      await joinRoom(userId, roomId)
-      await socket.joinRoom(username, roomId)
-      return res.status(200).json({})
+      const room = await joinRoom(user, roomId)
+      return res.status(200).json({
+        'room': room
+      })
     } catch (err) {
       console.error(err)
       return res.status(500).json({
-        'error': 'unexpected error'
+        'error': err.message
       }).end()
     }
   }
@@ -48,30 +43,15 @@ api.post('/join/:id(\\d+)', getUserFromAuthnToken,
 api.delete('/join', getUserFromAuthnToken,
   async (req, res) => {
     try {
-      const userId = res.locals.user.id
-      const username = res.locals.user.name
-      const roomId = await leaveRoom(userId)
-      await socket.leaveRoom(username, roomId)
-      return res.status(200).json({})
+      const user = res.locals.user
+      const room = await leaveRoom(user)
+      return res.status(200).json({
+        'room': room
+      })
     } catch (err) {
       console.error(err)
       return res.status(500).json({
-        'error': 'unexpected error'
-      }).end()
-    }
-  }
-)
-
-api.delete('/ready', getUserFromAuthnToken,
-  async (req, res) => {
-    try {
-      const userId = res.locals.user.id
-      await updateReady(userId, false)
-      return res.status(200).json({})
-    } catch (err) {
-      console.error(err)
-      return res.status(500).json({
-        'error': 'unexpected error'
+        'error': err.message
       }).end()
     }
   }
@@ -80,13 +60,28 @@ api.delete('/ready', getUserFromAuthnToken,
 api.put('/ready', getUserFromAuthnToken,
   async (req, res) => {
     try {
-      const userId = res.locals.user.id
-      await updateReady(userId, true)
+      const user = res.locals.user
+      await updateReady(user, true)
       return res.status(200).json({})
     } catch (err) {
       console.error(err)
       return res.status(500).json({
-        'error': 'unexpected error'
+        'error': err.message
+      }).end()
+    }
+  }
+)
+
+api.delete('/ready', getUserFromAuthnToken,
+  async (req, res) => {
+    try {
+      const user = res.locals.user
+      await updateReady(user, false)
+      return res.status(200).json({})
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
       }).end()
     }
   }
