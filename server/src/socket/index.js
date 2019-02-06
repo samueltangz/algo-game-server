@@ -1,6 +1,12 @@
 const { findUserByToken } = require('../model/users.js')
 const { findRoomsByUserId } = require('../model/rooms_users.js')
 
+function socketAPIs (socket) {
+  socket.on('token', function (tokenValue) {
+    token(socket, tokenValue)
+  })
+}
+
 async function token (socket, token) {
   try {
     const user = await findUserByToken(token)
@@ -27,5 +33,5 @@ async function token (socket, token) {
 }
 
 module.exports = {
-  token
+  socketAPIs
 }

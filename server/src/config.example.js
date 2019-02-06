@@ -1,6 +1,8 @@
 const config = {
   portAPI: 3000,
   portSocket: 3001,
+  portRedis: 6379,
+
   mysql: {
     host: 'localhost',
     user: 'algo-dev',

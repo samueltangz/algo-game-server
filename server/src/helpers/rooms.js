@@ -1,3 +1,5 @@
+/* global queue */
+
 const socket = require('../utils/socket')
 const { intToBoolean } = require('../utils/utils')
 const model = require('../model')
@@ -18,6 +20,7 @@ async function createAndJoinRoom (user) {
     await model.joinRoom(userId, roomId)
 
     await socket.joinRoom(username, roomId)
+    socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
 
     await model.commit()
     return marshalRoom(room)
@@ -117,7 +120,13 @@ async function updateReady (user, isReady) {
       socket.roomBroadcast(roomId, `${username} is now not ready`)
     }
 
+    if (room['user_count'] === room['ready_user_count'] && room['user_count'] >= 2) {
+      model.updateRoomStatus(roomId, model.roomStatus.PREPARE)
+      queue.create('initialize_game', { roomId }).save()
+    }
+
     await model.commit()
+
     return marshalRoom(room)
   } catch (err) {
     await model.rollback()

@@ -4,7 +4,7 @@ const {
   findRoomsByUserId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
 } = require('./rooms_users')
 const {
-  roomStatus, roomStatusToString, createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, deleteRoom
+  roomStatus, roomStatusToString, createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
 } = require('./rooms')
 const {
   findUserById, findUserByToken, listTopTen
@@ -57,6 +57,7 @@ module.exports = {
   findRoomsByStatus,
   deltaUserCount,
   deltaReadyUserCount,
+  updateRoomStatus,
   deleteRoom,
 
   // users

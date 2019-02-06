@@ -2,12 +2,14 @@
 
 const roomStatus = {
   WAITING: 0,
-  PLAYING: 1
+  PREPARE: 1,
+  PLAYING: 2
 }
 
 function roomStatusToString (status) {
   switch (status) {
     case roomStatus.WAITING: return 'waiting'
+    case roomStatus.PREPARE: return 'prepare'
     case roomStatus.PLAYING: return 'playing'
     default: throw new Error('undefined status')
   }
@@ -65,6 +67,17 @@ async function deltaReadyUserCount (id, delta) {
   return findRoomById(id)
 }
 
+async function updateRoomStatus (id, status) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE rooms SET status = ? WHERE id = ? LIMIT 1', [ status, id ], function (err, result) {
+      if (err) return reject(err)
+      if (result.changedRows !== 1) return reject(new Error('cannot update room status'))
+      resolve()
+    })
+  })
+  return findRoomById(id)
+}
+
 async function deleteRoom (id) {
   return new Promise((resolve, reject) => {
     con.query('DELETE FROM rooms WHERE id = ? LIMIT 1', [ id ], function (err, result) {
@@ -84,5 +97,6 @@ module.exports = {
   findRoomsByStatus,
   deltaUserCount,
   deltaReadyUserCount,
+  updateRoomStatus,
   deleteRoom
 }
