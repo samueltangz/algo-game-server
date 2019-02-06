@@ -2,25 +2,23 @@
 
 const roomStatus = {
   WAITING: 0,
-  PLAYING: 1,
-  FINISHED: 2
+  PLAYING: 1
 }
 
 function roomStatusToString (status) {
   switch (status) {
     case roomStatus.WAITING: return 'waiting'
     case roomStatus.PLAYING: return 'playing'
-    case roomStatus.FINISHED: return 'finished'
     default: throw new Error('undefined status')
   }
 }
 
 async function createRoom () {
   const id = await new Promise((resolve, reject) => {
-    con.query('INSERT INTO rooms (id, status) VALUES (NULL, 0)', function (err, result) {
+    con.query('INSERT INTO rooms (id, status, user_count, ready_user_count) VALUES (NULL, 0, 1, 0)', function (err, result) {
       if (err) return reject(err)
       if (result.affectedRows !== 1) return reject(new Error('cannot create room'))
-      resolve(result.affectedRows)
+      resolve(result.insertId)
     })
   })
   return findRoomById(id)
@@ -45,11 +43,46 @@ async function findRoomsByStatus (status) {
   })
 }
 
+async function deltaUserCount (id, delta) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE rooms SET user_count = user_count + ? WHERE id = ? LIMIT 1', [ delta, id ], function (err, result) {
+      if (err) return reject(err)
+      if (result.changedRows !== 1) return reject(new Error('cannot update user count'))
+      resolve()
+    })
+  })
+  return findRoomById(id)
+}
+
+async function deltaReadyUserCount (id, delta) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE rooms SET ready_user_count = ready_user_count + ? WHERE id = ? LIMIT 1', [ delta, id ], function (err, result) {
+      if (err) return reject(err)
+      if (result.changedRows !== 1) return reject(new Error('cannot update ready user count'))
+      resolve()
+    })
+  })
+  return findRoomById(id)
+}
+
+async function deleteRoom (id) {
+  return new Promise((resolve, reject) => {
+    con.query('DELETE FROM rooms WHERE id = ? LIMIT 1', [ id ], function (err, result) {
+      if (err) return reject(err)
+      if (result.affectedRows !== 1) return reject(new Error('cannot leave room'))
+      resolve()
+    })
+  })
+}
+
 module.exports = {
   roomStatus,
   roomStatusToString,
 
   createRoom,
   findRoomById,
-  findRoomsByStatus
+  findRoomsByStatus,
+  deltaUserCount,
+  deltaReadyUserCount,
+  deleteRoom
 }

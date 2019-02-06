@@ -6,7 +6,9 @@ const config = {
     user: 'algo-dev',
     password: 'development',
     database: 'algo_development'
-  }
+  },
+
+  roomSize: 4
 }
 
 exports.config = config
