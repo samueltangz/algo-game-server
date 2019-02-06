@@ -6,6 +6,7 @@ const socket = require('socket.io')
 
 const { config } = require('./config')
 const router = require('./router')
+const socketAPI = require('./socket')
 
 // Application endpoints
 const app = express()
@@ -19,7 +20,7 @@ app.listen(config.portAPI, function () {
 // Socket
 const server = http.createServer(app)
 const io = socket(server, {
-  origins: '*:*'
+  origins: '0.0.0.0:*'
 })
 
 server.listen(config.portSocket, function () {
@@ -27,14 +28,8 @@ server.listen(config.portSocket, function () {
 })
 
 io.on('connection', function (socket) {
-  console.log('user connected')
-  socket.emit('chat message', ':o)')
-  socket.on('disconnect', function () {
-    console.log('user disconnected')
-  })
-  socket.on('chat message', function (message) {
-    if (message.length > 100) return
-    io.emit('chat message', message + '?')
+  socket.on('token', function (token) {
+    socketAPI.token(socket, token)
   })
 })
 
@@ -50,5 +45,6 @@ con.connect(function (err) {
   if (err) throw err
   console.log('Connected to database')
 })
+
 global.con = con
 global.io = io
