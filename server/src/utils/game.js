@@ -1,6 +1,6 @@
 const { randBetween } = require('./random')
 
-const shuffleCards = function (cards) {
+function shuffleCards (cards) {
   let cardIndices = [...Array(cards.length).keys()]
   for (let i = 0; i < cards.length; i++) {
     const j = randBetween(0, cards.length)

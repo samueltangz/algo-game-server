@@ -16,6 +16,7 @@
   },
   "scripts": {
     "start": "nodemon src/index.js",
+    "test-only": "jest",
     "test": "jest && codecov",
     "lint": "eslint src"
   },
