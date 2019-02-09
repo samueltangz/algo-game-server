@@ -16,7 +16,7 @@ async function token (socket, token) {
       socket.join(`user/${user.id}`, function () {
         resolve()
       })
-      socket.emit('game_message', `You have joined group "user/${user.id}"`)
+      socket.emit('game_broadcast', `You have joined group "user/${user.id}"`)
     })
     if (rooms.length > 0) {
       const roomId = rooms[0]['id']
@@ -24,7 +24,7 @@ async function token (socket, token) {
         socket.join(`room/${roomId}`, function () {
           resolve()
         })
-        socket.emit('game_message', `You have joined group "room/${roomId}"`)
+        socket.emit('game_broadcast', `You have joined group "room/${roomId}"`)
       })
     }
   } catch (err) {

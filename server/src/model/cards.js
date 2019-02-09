@@ -40,8 +40,38 @@ async function listCardsByGameId (gameId) {
   return cards
 }
 
+async function unpickAllCardsByGameId (gameId) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE `cards` SET `is_picked` = 0 WHERE `game_id` = ?', [ gameId ], function (err, _) {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+}
+
+async function pickCardById (id) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE `cards` SET `is_picked` = 1 WHERE `id` = ?', [ id ], function (err, _) {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+}
+
+async function revealCardById (id) {
+  await new Promise((resolve, reject) => {
+    con.query('UPDATE `cards` SET `is_revealed` = 1 WHERE `id` = ?', [ id ], function (err, _) {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+}
+
 module.exports = {
   createCard,
   drawCard,
-  listCardsByGameId
+  listCardsByGameId,
+  unpickAllCardsByGameId,
+  pickCardById,
+  revealCardById
 }

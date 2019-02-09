@@ -1,10 +1,10 @@
 /* global con */
 
 const {
-  createCard, drawCard, listCardsByGameId
+  createCard, drawCard, listCardsByGameId, unpickAllCardsByGameId, pickCardById, revealCardById
 } = require('./cards')
 const {
-  createGame, findGameById, deltaGameCardDeckPointer, updateGameTurnInitiated
+  createGame, findGameById, deltaGameCardDeckPointer, updateGameTurnInitiated, deltaGameAttackCount, deltaGameScoreById, updateGameCurrentTurn
 } = require('./games')
 const {
   findRoomsByUserId, findRoomsUsersByRoomId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
@@ -52,12 +52,18 @@ module.exports = {
   createCard,
   drawCard,
   listCardsByGameId,
+  unpickAllCardsByGameId,
+  pickCardById,
+  revealCardById,
 
   // games
   createGame,
   findGameById,
   deltaGameCardDeckPointer,
   updateGameTurnInitiated,
+  deltaGameAttackCount,
+  deltaGameScoreById,
+  updateGameCurrentTurn,
 
   // rooms_users
   findRoomsByUserId,

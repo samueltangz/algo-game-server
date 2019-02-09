@@ -30,6 +30,7 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.0.0",
+    "jest-stare": "^1.11.1",
     "nodemon": "^1.18.9"
   },
   "jest": {
@@ -37,6 +38,14 @@
     "collectCoverageFrom": [
       "src/**"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
+    "reporters": [
+      "default",
+      "jest-stare"
+    ]
   }
 }

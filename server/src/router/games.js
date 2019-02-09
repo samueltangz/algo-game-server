@@ -1,7 +1,7 @@
 const express = require('express')
 
 const { getUserFromAuthnToken } = require('../utils/middlewares')
-// const {} = require('../helpers/games')
+const { pickAction, attackAction, keepAction } = require('../helpers/games')
 
 const api = express.Router()
 
@@ -17,27 +17,60 @@ api.get('/', getUserFromAuthnToken,
 // attack
 api.post('/action/attack', getUserFromAuthnToken,
   async (req, res) => {
-    return res.status(200).json({
-      'message': 'wip'
-    })
+    try {
+      const user = res.locals.user
+      const gameId = req.body['game_id']
+      const cardId = req.body['card_id']
+      const value = req.body['value']
+      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
+      if (typeof cardId !== 'number') throw new Error('card_id should be a number')
+      if (typeof value !== 'number') throw new Error('value should be a number')
+      await attackAction(1, gameId, user['id'], cardId, value)
+      return res.status(200).json({})
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
+      }).end()
+    }
   }
 )
 
 // pick a card
 api.post('/action/pick', getUserFromAuthnToken,
   async (req, res) => {
-    return res.status(200).json({
-      'message': 'wip'
-    })
+    try {
+      const user = res.locals.user
+      const gameId = req.body['game_id']
+      const cardId = req.body['card_id']
+      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
+      if (typeof cardId !== 'number') throw new Error('card_id should be a number')
+      await pickAction(3, gameId, user['id'], cardId)
+      return res.status(200).json({})
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
+      }).end()
+    }
   }
 )
 
 // keep
 api.post('/action/keep', getUserFromAuthnToken,
   async (req, res) => {
-    return res.status(200).json({
-      'message': 'wip'
-    })
+    try {
+      const user = res.locals.user
+      const gameId = req.body['game_id']
+      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
+      await keepAction(3, gameId, user['id'])
+      return res.status(200).json({})
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
+      }).end()
+    }
   }
 )
 
