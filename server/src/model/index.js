@@ -1,7 +1,7 @@
 /* global con */
 
 const {
-  cardColor, cardColorToString, createCard, drawCard
+  createCard, drawCard, listCardsByGameId
 } = require('./cards')
 const {
   createGame, findGameById, deltaGameCardDeckPointer, updateGameTurnInitiated
@@ -10,7 +10,7 @@ const {
   findRoomsByUserId, findRoomsUsersByRoomId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
 } = require('./rooms_users')
 const {
-  roomStatus, roomStatusToString, createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
+  createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
 } = require('./rooms')
 const {
   findUserById, findUserByToken, listTopTen
@@ -49,10 +49,9 @@ module.exports = {
   rollback,
 
   // cards
-  cardColor,
-  cardColorToString,
   createCard,
   drawCard,
+  listCardsByGameId,
 
   // games
   createGame,
@@ -69,8 +68,6 @@ module.exports = {
   updateReady,
 
   // rooms
-  roomStatus,
-  roomStatusToString,
   createRoom,
   findRoomById,
   findRoomsByStatus,

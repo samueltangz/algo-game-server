@@ -22,7 +22,8 @@ exports.up = function (db, callback) {
     color: { type: 'int', notNull: true },
     value: { type: 'int', notNull: true },
     order: { type: 'int', notNull: true },
-    is_picked: { type: 'boolean', notNull: true, defaultValue: false }
+    is_picked: { type: 'boolean', notNull: true, defaultValue: false },
+    is_revealed: { type: 'boolean', notNull: true, defaultValue: false }
   }, callback)
 }
 

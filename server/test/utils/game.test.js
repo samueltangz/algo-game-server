@@ -1,7 +1,7 @@
 const assert = require('assert')
 
-const game = require('./../../src/utils/game.js')
-const model = require('./../../src/model')
+const game = require('../../src/utils/game.js')
+const { cardColor } = require('../../src/helpers/cards')
 
 describe('utils/game.js', () => {
   describe('shuffleArray', () => {
@@ -9,8 +9,8 @@ describe('utils/game.js', () => {
     test('should shuffle properly', () => {
       let cards = []
       for (let i = 0; i < 12; i++) {
-        cards.push({ value: i, color: model.cardColor.BLACK })
-        cards.push({ value: i, color: model.cardColor.WHITE })
+        cards.push({ value: i, color: cardColor.BLACK })
+        cards.push({ value: i, color: cardColor.WHITE })
       }
       const shuffledCards = fn(cards)
 
@@ -20,8 +20,8 @@ describe('utils/game.js', () => {
     test('should conserve cards', () => {
       let cards = []
       for (let i = 0; i < 12; i++) {
-        cards.push({ value: i, color: model.cardColor.BLACK })
-        cards.push({ value: i, color: model.cardColor.WHITE })
+        cards.push({ value: i, color: cardColor.BLACK })
+        cards.push({ value: i, color: cardColor.WHITE })
       }
       const shuffledCards = fn(cards)
 
@@ -31,7 +31,7 @@ describe('utils/game.js', () => {
       let colorChecksum = 0
       shuffledCards.forEach(card => {
         valueChecksum += card.value
-        colorChecksum += card.color === model.cardColor.BLACK ? 1 : -1
+        colorChecksum += card.color === cardColor.BLACK ? 1 : -1
       })
       assert.strictEqual(valueChecksum, 132)
       assert.strictEqual(colorChecksum, 0)
@@ -40,8 +40,8 @@ describe('utils/game.js', () => {
     test('should not have side effects', () => {
       let cards = []
       for (let i = 0; i < 12; i++) {
-        cards.push({ value: i, color: model.cardColor.BLACK })
-        cards.push({ value: i, color: model.cardColor.WHITE })
+        cards.push({ value: i, color: cardColor.BLACK })
+        cards.push({ value: i, color: cardColor.WHITE })
       }
       fn(cards)
 
@@ -49,8 +49,8 @@ describe('utils/game.js', () => {
       for (let i = 0; i < 12; i++) {
         assert.strictEqual(cards[2 * i    ].value, i)
         assert.strictEqual(cards[2 * i + 1].value, i)
-        assert.strictEqual(cards[2 * i    ].color, model.cardColor.BLACK)
-        assert.strictEqual(cards[2 * i + 1].color, model.cardColor.WHITE)
+        assert.strictEqual(cards[2 * i    ].color, cardColor.BLACK)
+        assert.strictEqual(cards[2 * i + 1].color, cardColor.WHITE)
       }
     })
   })
@@ -59,29 +59,29 @@ describe('utils/game.js', () => {
     test('should sort properly', () => {
       const tests = [{
         cards: [
-          { value: 3, color: model.cardColor.BLACK },
-          { value: 7, color: model.cardColor.BLACK },
-          { value: 5, color: model.cardColor.BLACK },
-          { value: 1, color: model.cardColor.BLACK }
+          { value: 3, color: cardColor.BLACK },
+          { value: 7, color: cardColor.BLACK },
+          { value: 5, color: cardColor.BLACK },
+          { value: 1, color: cardColor.BLACK }
         ],
         expected: [
-          { value: 1, color: model.cardColor.BLACK },
-          { value: 3, color: model.cardColor.BLACK },
-          { value: 5, color: model.cardColor.BLACK },
-          { value: 7, color: model.cardColor.BLACK }
+          { value: 1, color: cardColor.BLACK },
+          { value: 3, color: cardColor.BLACK },
+          { value: 5, color: cardColor.BLACK },
+          { value: 7, color: cardColor.BLACK }
         ]
       }, {
         cards: [
-          { value: 1, color: model.cardColor.BLACK },
-          { value: 0, color: model.cardColor.WHITE },
-          { value: 1, color: model.cardColor.WHITE },
-          { value: 0, color: model.cardColor.BLACK }
+          { value: 1, color: cardColor.BLACK },
+          { value: 0, color: cardColor.WHITE },
+          { value: 1, color: cardColor.WHITE },
+          { value: 0, color: cardColor.BLACK }
         ],
         expected: [
-          { value: 0, color: model.cardColor.BLACK },
-          { value: 0, color: model.cardColor.WHITE },
-          { value: 1, color: model.cardColor.BLACK },
-          { value: 1, color: model.cardColor.WHITE }
+          { value: 0, color: cardColor.BLACK },
+          { value: 0, color: cardColor.WHITE },
+          { value: 1, color: cardColor.BLACK },
+          { value: 1, color: cardColor.WHITE }
         ]
       }]
       tests.forEach(test => {

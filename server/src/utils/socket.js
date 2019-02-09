@@ -24,6 +24,10 @@ function gameMessage (userId, message) {
   io.sockets.in(`user/${userId}`).emit('game_message', message)
 }
 
+function gameBoardState (userId, boardState) {
+  io.sockets.in(`user/${userId}`).emit('game_board_state', boardState)
+}
+
 // joining and leaving rooms
 async function joinRoom (userId, roomId) {
   try {
@@ -50,6 +54,7 @@ module.exports = {
   gameBroadcast,
   roomMessage,
   gameMessage,
+  gameBoardState,
 
   joinRoom,
   leaveRoom

@@ -41,6 +41,9 @@ export default {
       socket.on('room_message', function (message) {
         console.log(message)
       })
+      socket.on('game_board_state', function (boardState) {
+        console.log(boardState)
+      })
     })
 
     socket.on('disconnect', function () {
@@ -48,6 +51,7 @@ export default {
       socket.removeAllListeners('room_broadcast')
       socket.removeAllListeners('game_message')
       socket.removeAllListeners('room_message')
+      socket.removeAllListeners('game_board_state')
     })
   }
 }

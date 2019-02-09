@@ -1,19 +1,6 @@
 /* global con */
 const { booleanToInt } = require('../utils/utils')
 
-const cardColor = {
-  BLACK: 0,
-  WHITE: 1
-}
-
-function cardColorToString (color) {
-  switch (color) {
-    case cardColor.BLACK: return 'black'
-    case cardColor.WHITE: return 'white'
-    default: throw new Error('undefined color')
-  }
-}
-
 async function createCard (gameId, color, value, order) {
   await new Promise((resolve, reject) => {
     con.query('INSERT INTO cards (`id`, `game_id`, `user_id`, `color`, `value`, `order`, `is_picked`) VALUES (NULL, ?, NULL, ?, ?, ?, false)',
@@ -40,10 +27,21 @@ async function drawCard (gameId, order, userId, isPicked = false) {
   })
 }
 
-module.exports = {
-  cardColor,
-  cardColorToString,
+async function listCardsByGameId (gameId) {
+  const cards = await new Promise((resolve, reject) => {
+    con.query('SELECT * FROM `cards` WHERE `game_id` = ?',
+      [ gameId ],
+      function (err, cards, _) {
+        if (err) return reject(err)
+        resolve(cards)
+      }
+    )
+  })
+  return cards
+}
 
+module.exports = {
   createCard,
-  drawCard
+  drawCard,
+  listCardsByGameId
 }

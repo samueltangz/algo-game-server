@@ -1,20 +1,5 @@
 /* global con */
 
-const roomStatus = {
-  WAITING: 0,
-  PREPARE: 1,
-  PLAYING: 2
-}
-
-function roomStatusToString (status) {
-  switch (status) {
-    case roomStatus.WAITING: return 'waiting'
-    case roomStatus.PREPARE: return 'prepare'
-    case roomStatus.PLAYING: return 'playing'
-    default: throw new Error('undefined status')
-  }
-}
-
 async function createRoom () {
   const id = await new Promise((resolve, reject) => {
     con.query('INSERT INTO rooms (id, status, user_count, ready_user_count) VALUES (NULL, 0, 1, 0)', function (err, result) {
@@ -89,9 +74,6 @@ async function deleteRoom (id) {
 }
 
 module.exports = {
-  roomStatus,
-  roomStatusToString,
-
   createRoom,
   findRoomById,
   findRoomsByStatus,
