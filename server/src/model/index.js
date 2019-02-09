@@ -1,6 +1,12 @@
 /* global con */
 
 const {
+  cardColor, cardColorToString, createCard, drawCard
+} = require('./cards')
+const {
+  createGame, findGameById, deltaGameCardDeckPointer, updateGameTurnInitiated
+} = require('./games')
+const {
   findRoomsByUserId, findRoomsUsersByRoomId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
 } = require('./rooms_users')
 const {
@@ -41,6 +47,18 @@ module.exports = {
   startTransaction,
   commit,
   rollback,
+
+  // cards
+  cardColor,
+  cardColorToString,
+  createCard,
+  drawCard,
+
+  // games
+  createGame,
+  findGameById,
+  deltaGameCardDeckPointer,
+  updateGameTurnInitiated,
 
   // rooms_users
   findRoomsByUserId,

@@ -1,8 +1,8 @@
 /* global io */
 
-function getSocketByUser (user) {
+function getSocketByUserId (userId) {
   const obj = io.sockets.sockets
-  const key = Object.keys(obj).find(key => Object.keys(obj[key].rooms).includes(`user/${user}`))
+  const key = Object.keys(obj).find(key => Object.keys(obj[key].rooms).includes(`user/${userId}`))
   if (!key) throw new Error('user not connected')
   return obj[key]
 }
@@ -12,33 +12,33 @@ function roomBroadcast (roomId, message) {
   io.sockets.in(`room/${roomId}`).emit('room_broadcast', message)
 }
 
-function gameBroadcast (user, message) {
-  io.sockets.in(`user/${user}`).emit('game_broadcast', message)
+function gameBroadcast (userId, message) {
+  io.sockets.in(`user/${userId}`).emit('game_broadcast', message)
 }
 
 function roomMessage (roomId, message) {
   io.sockets.in(`room/${roomId}`).emit('room_message', message)
 }
 
-function gameMessage (user, message) {
-  io.sockets.in(`user/${user}`).emit('game_message', message)
+function gameMessage (userId, message) {
+  io.sockets.in(`user/${userId}`).emit('game_message', message)
 }
 
 // joining and leaving rooms
-async function joinRoom (user, roomId) {
+async function joinRoom (userId, roomId) {
   try {
     await new Promise(function (resolve, reject) {
-      getSocketByUser(user).join(`room/${roomId}`, function () {
+      getSocketByUserId(userId).join(`room/${roomId}`, function () {
         resolve()
       })
     })
   } catch (err) {}
 }
 
-async function leaveRoom (user, roomId) {
+async function leaveRoom (userId, roomId) {
   try {
     await new Promise(function (resolve, reject) {
-      getSocketByUser(user).leave(`room/${roomId}`, function () {
+      getSocketByUserId(userId).leave(`room/${roomId}`, function () {
         resolve()
       })
     })

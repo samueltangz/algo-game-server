@@ -125,6 +125,7 @@ async function updateReady (user, isReady) {
 
     if (room['user_count'] === room['ready_user_count'] && room['user_count'] >= 2) {
       room = await model.updateRoomStatus(roomId, model.roomStatus.PREPARE)
+      socket.roomBroadcast(roomId, `All players are ready.  Preparing game.`)
       queue.create('initialize_game', { roomId }).save()
     }
 

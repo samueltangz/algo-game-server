@@ -13,10 +13,10 @@ async function token (socket, token) {
     const rooms = await findRoomsByUserId(user.id)
 
     await new Promise(function (resolve, reject) {
-      socket.join(`user/${user.name}`, function () {
+      socket.join(`user/${user.id}`, function () {
         resolve()
       })
-      socket.emit('game_message', `You have joined group "user/${user.name}"`)
+      socket.emit('game_message', `You have joined group "user/${user.id}"`)
     })
     if (rooms.length > 0) {
       const roomId = rooms[0]['id']

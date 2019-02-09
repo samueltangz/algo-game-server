@@ -63,13 +63,13 @@ global.redisClient = redisClient
 // Job queue
 const queue = kue.createQueue()
 queue.on('job enqueue', function (id, type) {
-  console.log(`Job ${id} got queued of type ${type}`)
+  console.log(`New job #${id} (type: ${type})`)
 }).on('job complete', function (id, result) {
   kue.Job.get(id, function (err, job) {
     if (err) throw err
     job.remove(function (err) {
       if (err) throw err
-      console.log(`removed completed job #${job.id}`)
+      console.log(`Completed job #${job.id}`)
     })
   })
 })
