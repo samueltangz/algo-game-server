@@ -3,7 +3,7 @@ const sinon = require('sinon')
 
 const mysql = require('mysql')
 
-const { config } = require('../../src/config')
+const { config } = require('../../src/config.example')
 const cards = require('../../src/model/cards')
 const { cardColor } = require('../../src/helpers/cards')
 
