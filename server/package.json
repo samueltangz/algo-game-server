@@ -30,7 +30,8 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.0.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "sinon": "^7.2.3"
   },
   "jest": {
     "coverageDirectory": "./coverage/",

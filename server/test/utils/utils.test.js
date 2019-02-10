@@ -10,9 +10,18 @@ describe('utils/utils.js', () => {
       assert.strictEqual(fn(1), true)
     })
     test('should throw errors for invalid inputs', () => {
-      assert.throws(() => { fn('0') }, 'Error: invalid input')
-      assert.throws(() => { fn(true) }, 'Error: invalid input')
-      assert.throws(() => { fn(2) }, 'Error: invalid input')
+      assert.throws(
+        () => { fn('0') },
+        /^Error: invalid input$/
+      )
+      assert.throws(
+        () => { fn(true) },
+        /^Error: invalid input$/
+      )
+      assert.throws(
+        () => { fn(2) },
+        /^Error: invalid input$/
+      )
     })
   })
   describe('booleanToInt', () => {
@@ -22,8 +31,14 @@ describe('utils/utils.js', () => {
       assert.strictEqual(fn(true), 1)
     })
     test('should throw errors for invalid inputs', () => {
-      assert.throws(() => { fn('false') }, 'Error: invalid input')
-      assert.throws(() => { fn(0) }, 'Error: invalid input')
+      assert.throws(
+        () => { fn('false') },
+        /^Error: invalid input$/
+      )
+      assert.throws(
+        () => { fn(0) },
+        /^Error: invalid input$/
+      )
     })
   })
 })

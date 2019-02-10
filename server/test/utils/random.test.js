@@ -12,7 +12,7 @@ describe('utils/random.js', () => {
         tally[v] += 1
       }
       for (let i = 0; i < 100; i++) {
-        assert.ok(tally[i] >= 900 && tally[i] <= 1100)
+        assert.ok(tally[i] >= 800 && tally[i] <= 1200)
       }
     })
   })
