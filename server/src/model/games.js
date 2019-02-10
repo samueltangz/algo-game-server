@@ -1,5 +1,6 @@
 /* global con */
 const { booleanToInt } = require('../utils/utils')
+const { listCardsByGameId } = require('./cards')
 
 async function createGame (userCount, userIds) {
   const id = await new Promise((resolve, reject) => {
@@ -91,8 +92,23 @@ async function deltaGameScoreById (id, userOrder, delta) {
 }
 
 async function updateGameCurrentTurn (id) {
+  const [ game, listCards ] = await Promise.all([
+    findGameById(id), listCardsByGameId(id)
+  ])
+
+  let newTurn = game['current_turn'] % game['user_count'] + 1
+
+  const userIndexKeyMap = ['user_1_id', 'user_2_id', 'user_3_id', 'user_4_id']
+  const cardsLeft = userIndexKeyMap.map(userIndexKey =>
+    listCards.filter(card => card['user_id'] === game[userIndexKey] && !card['is_revealed']).length
+  )
+
+  while (cardsLeft[newTurn - 1] === 0) newTurn = newTurn % game['user_count'] + 1
+
+  if (game['current_turn'] === newTurn) throw new Error('only one player left')
+
   await new Promise((resolve, reject) => {
-    con.query('UPDATE games SET current_turn = MOD(current_turn, user_count) + 1 WHERE id = ? LIMIT 1', [ id ], function (err, result) {
+    con.query('UPDATE games SET current_turn = ? WHERE id = ? LIMIT 1', [ newTurn, id ], function (err, result) {
       if (err) return reject(err)
       if (result.changedRows !== 1) return reject(new Error('cannot update current turn'))
       resolve()

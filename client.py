@@ -76,8 +76,10 @@ while True:
     t = int(raw_input('TKN > ').strip())
     if t == 0:
         TOKEN = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-    else:
+    elif t == 1:
         TOKEN = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
+    else:
+        TOKEN = 'pc5LQulClke89o_E0Wyu6-uQzfx0eMpHuuSv4h4xTg4'
     r = raw_input('ACT > ').strip()
     if r == 'me':
         print me()

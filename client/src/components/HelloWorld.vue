@@ -28,12 +28,15 @@ export default {
     }
   },
   mounted () {
-    if (Math.random() < 0.5) {
+    if (Math.random() < 1.0 / 3.0) {
       this.name = 'Samuel'
       this.token = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-    } else {
+    } else if (Math.random() < 1.0 / 2.0) {
       this.name = 'Wing'
       this.token = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
+    } else {
+      this.name = 'Ken'
+      this.token = 'pc5LQulClke89o_E0Wyu6-uQzfx0eMpHuuSv4h4xTg4'
     }
 
     const token = this.token

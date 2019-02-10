@@ -135,7 +135,7 @@ async function initializeGame (roomId) {
 
   // Distribute the cards
   const distributeCardPromises = []
-  const maxCardCount = 5 - userCount
+  const maxCardCount = 6 - userCount
   for (let cardCount = 0, orderIndex = 0; cardCount < maxCardCount; cardCount++) {
     for (let userIndex = 0; userIndex < userCount; userIndex++, orderIndex++) {
       const userId = shuffledUserIds[userIndex]
@@ -288,9 +288,18 @@ async function endGame (roomId, gameId) {
       updateScoresPromises.push(model.deltaGameScoreById(gameId, userOrder + 1, totalCardsRemaining * 10 * (playerCount - 1)))
     }
   })
+  await Promise.all(updateScoresPromises)
 
   socket.roomBroadcast(roomId, 'Game ended!')
   await sendBoardState(gameId)
+  await model.deltaReadyUserCount(roomId, -game['user_count'])
+  const updateReadyPromises = []
+  const userList = getUserList(game)
+  userList.forEach(userId => {
+    updateReadyPromises.push(model.updateReady(userId, roomId, false))
+  })
+  await Promise.all(updateReadyPromises)
+
   await model.updateRoomStatus(roomId, roomStatus.WAITING)
 
   // TODO: update player rating
