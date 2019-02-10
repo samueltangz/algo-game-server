@@ -37,13 +37,6 @@
     "collectCoverageFrom": [
       "src/**"
     ],
-    "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
-    ],
-    "reporters": [
-      "default"
-    ]
+    "collectCoverage": true
   }
 }
