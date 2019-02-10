@@ -118,7 +118,7 @@ async function updateReady (user, isReady) {
     const { 'id': userId, 'name': username } = user
     const roomsJoined = await model.findRoomsByUserId(userId)
     if (roomsJoined.length === 0) throw new Error('user is not in a room')
-    // if (roomsJoined[0]['status'] !== roomStatus.WAITING) throw new Error('ready status cannot be changed')
+    if (roomsJoined[0]['status'] !== roomStatus.WAITING) throw new Error('ready status cannot be changed')
 
     const roomId = roomsJoined[0]['id']
     const roomsUsers = await model.findRoomsUsersByUserIdAndRoomId(userId, roomId)

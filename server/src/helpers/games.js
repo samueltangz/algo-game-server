@@ -8,7 +8,7 @@ const { shuffleArray, sortCards } = require('../utils/game')
 const { cardColor, marshalCard } = require('./cards')
 const { roomStatus } = require('./rooms')
 
-// private functions
+// Private functions
 function getUserList (game) {
   const users = []
   const userIndexKeyMap = ['user_1_id', 'user_2_id', 'user_3_id', 'user_4_id']
@@ -100,7 +100,8 @@ async function sendBoardState (gameId) {
   })
 }
 
-// public functions
+// Public functions
+
 async function initializeGame (roomId) {
   await model.startTransaction()
   await model.updateRoomStatus(roomId, roomStatus.WAITING)
@@ -148,14 +149,13 @@ async function initializeGame (roomId) {
 
   await model.commit()
 
-  socket.roomBroadcast(roomId, `The game is starting...`)
-  // Start round
+  socket.roomBroadcast(roomId, 'The game is starting...')
+
+  // Start turn
   queue.create('initiate_turn', { roomId, gameId }).save()
 }
 
 async function initiateTurn (roomId, gameId) {
-  // if there are cards => draw and automatically pick that card
-  // set attack counter = 0
   await model.startTransaction()
 
   const game = await model.findGameById(gameId)
@@ -165,12 +165,10 @@ async function initiateTurn (roomId, gameId) {
   if (order < 24) await model.drawCard(gameId, order, currentUserId, true)
   await model.deltaGameCardDeckPointer(gameId, 1)
 
-  socket.gameBroadcast(currentUserId, 'You drawed a card')
+  socket.gameBroadcast(currentUserId, 'You drew a card')
 
   await model.updateGameTurnInitiated(gameId, true)
 
-  console.log(game['attack_count'])
-  console.log(-game['attack_count'])
   if (game['attack_count'] > 0) await model.deltaGameAttackCount(gameId, -game['attack_count'])
 
   await sendBoardState(gameId)
@@ -188,9 +186,6 @@ async function endTurn (roomId, gameId) {
 
 // user picks a card to attack
 async function pickAction (roomId, gameId, userId, cardId) {
-  // if the user did not draw a card at the beginning
-  // can only pick self unrevealed cards
-  // cannot be changed after the player has attacked
   await model.startTransaction()
 
   const game = await model.findGameById(gameId)
@@ -200,9 +195,10 @@ async function pickAction (roomId, gameId, userId, cardId) {
   if (order <= 24) throw new Error('cannot pick another card')
 
   const cards = await model.listCardsByGameId(gameId)
-  const selectedCard = cards.find(card => card['id'] === cardId)
-  console.log(selectedCard)
-  if (selectedCard === undefined || selectedCard['user_id'] !== userId || selectedCard['is_revealed']) {
+  const selectedCard = cards.find(card =>
+    card['id'] === cardId && card['game_id'] === gameId && card['user_id'] === userId && !card['is_revealed']
+  )
+  if (selectedCard === undefined) {
     throw new Error('invalid card pick')
   }
   await model.unpickAllCardsByGameId(gameId)
@@ -223,10 +219,14 @@ async function attackAction (roomId, gameId, userId, defendCardId, guessValue) {
   if (currentUserId !== userId) throw new Error('not the user\'s turn')
 
   const cards = await model.listCardsByGameId(gameId)
-  const attackCard = cards.find(card => card['is_picked'] && card['user_id'] === userId)
+  const attackCard = cards.find(card =>
+    card['is_picked'] && card['user_id'] === userId
+  )
   if (attackCard === undefined) throw new Error('no attack cards picked')
 
-  const defendCard = cards.find(card => card['id'] === defendCardId)
+  const defendCard = cards.find(card =>
+    card['id'] === defendCardId && card['game_id'] === gameId && card['user_id'] !== userId && !card['is_revealed']
+  )
   if (defendCard === undefined) throw new Error('no defend cards picked')
   if (defendCard['value'] === guessValue) {
     const attackerUserOrder = userList.findIndex(iteratedUserId => iteratedUserId === userId)
@@ -245,6 +245,9 @@ async function attackAction (roomId, gameId, userId, defendCardId, guessValue) {
   }
 
   await sendBoardState(gameId)
+
+  endGame(roomId, gameId)
+
   await model.commit()
 }
 
@@ -261,10 +264,38 @@ async function keepAction (roomId, gameId, userId) {
 }
 
 async function endGame (roomId, gameId) {
-  // compute winner
-  // update score
-  // update room status
-  // update player rating
+  const game = await model.findGameById(gameId)
+  const cardList = await model.listCardsByGameId(gameId)
+  const boardState = getCurrentBoardState(game, cardList)
+
+  const cardsRemaining = boardState.hands.map(
+    hand => hand.filter(card => !card.isRevealed).length
+  )
+
+  const playersSurviving = cardsRemaining.reduce((acc, cards) => acc + (cards > 0 ? 1 : 0), 0)
+  const totalCardsRemaining = cardsRemaining.reduce((acc, cards) => acc + cards)
+
+  const updateScoresPromises = []
+  if (playersSurviving > 1) return
+
+  await model.startTransaction()
+
+  cardsRemaining.forEach((cardRemaining, userOrder) => {
+    if (cardRemaining === 0) {
+      updateScoresPromises.push(model.deltaGameScoreById(gameId, userOrder + 1, -totalCardsRemaining * 10))
+    } else {
+      const playerCount = boardState.players.length
+      updateScoresPromises.push(model.deltaGameScoreById(gameId, userOrder + 1, totalCardsRemaining * 10 * (playerCount - 1)))
+    }
+  })
+
+  socket.roomBroadcast(roomId, 'Game ended!')
+  await sendBoardState(gameId)
+  await model.updateRoomStatus(roomId, roomStatus.WAITING)
+
+  // TODO: update player rating
+
+  await model.commit()
 }
 
 module.exports = {

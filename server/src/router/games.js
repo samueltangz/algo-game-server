@@ -25,7 +25,7 @@ api.post('/action/attack', getUserFromAuthnToken,
       if (typeof gameId !== 'number') throw new Error('game_id should be a number')
       if (typeof cardId !== 'number') throw new Error('card_id should be a number')
       if (typeof value !== 'number') throw new Error('value should be a number')
-      await attackAction(1, gameId, user['id'], cardId, value)
+      await attackAction(3, gameId, user['id'], cardId, value)
       return res.status(200).json({})
     } catch (err) {
       console.error(err)
