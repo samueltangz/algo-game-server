@@ -37,6 +37,10 @@
     "collectCoverageFrom": [
       "src/**"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcovonly",
+      "html"
+    ]
   }
 }
