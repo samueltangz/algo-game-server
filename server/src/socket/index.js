@@ -1,16 +1,22 @@
 const { findUserByToken } = require('../model/users.js')
 const { findRoomsByUserId } = require('../model/rooms_users.js')
 
+function socketAPIs (socket) {
+  socket.on('token', function (tokenValue) {
+    token(socket, tokenValue)
+  })
+}
+
 async function token (socket, token) {
   try {
     const user = await findUserByToken(token)
     const rooms = await findRoomsByUserId(user.id)
 
     await new Promise(function (resolve, reject) {
-      socket.join(`user/${user.name}`, function () {
+      socket.join(`user/${user.id}`, function () {
         resolve()
       })
-      socket.emit('game_message', `You have joined group "user/${user.name}"`)
+      socket.emit('game_broadcast', `You have joined group "user/${user.id}"`)
     })
     if (rooms.length > 0) {
       const roomId = rooms[0]['id']
@@ -18,7 +24,7 @@ async function token (socket, token) {
         socket.join(`room/${roomId}`, function () {
           resolve()
         })
-        socket.emit('game_message', `You have joined group "room/${roomId}"`)
+        socket.emit('game_broadcast', `You have joined group "room/${roomId}"`)
       })
     }
   } catch (err) {
@@ -27,5 +33,5 @@ async function token (socket, token) {
 }
 
 module.exports = {
-  token
+  socketAPIs
 }

@@ -45,12 +45,41 @@ def unready():
     })
     return r.status_code, r.text
 
+def pick(game_id, card_id):
+    r = requests.post(DOMAIN + '/games/action/pick', headers = {
+        'authorization': 'Bearer %s' % TOKEN
+    }, json={
+        'game_id': int(game_id),
+        'card_id': int(card_id)
+    })
+    return r.status_code, r.text
+
+def attack(game_id, card_id, value):
+    r = requests.post(DOMAIN + '/games/action/attack', headers = {
+        'authorization': 'Bearer %s' % TOKEN
+    }, json={
+        'game_id': int(game_id),
+        'card_id': int(card_id),
+        'value': int(value)
+    })
+    return r.status_code, r.text
+
+def keep(game_id):
+    r = requests.post(DOMAIN + '/games/action/keep', headers = {
+        'authorization': 'Bearer %s' % TOKEN
+    }, json={
+        'game_id': int(game_id)
+    })
+    return r.status_code, r.text
+
 while True:
     t = int(raw_input('TKN > ').strip())
     if t == 0:
         TOKEN = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-    else:
+    elif t == 1:
         TOKEN = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
+    else:
+        TOKEN = 'pc5LQulClke89o_E0Wyu6-uQzfx0eMpHuuSv4h4xTg4'
     r = raw_input('ACT > ').strip()
     if r == 'me':
         print me()
@@ -67,3 +96,15 @@ while True:
         print ready()
     elif r == 'unready':
         print unready()
+    elif r == 'pick':
+        game_id = raw_input('GID > ')
+        card_id = raw_input('CID > ')
+        print pick(game_id, card_id)
+    elif r == 'attack':
+        game_id = raw_input('GID > ')
+        card_id = raw_input('CID > ')
+        value = raw_input('VAL > ')
+        print attack(game_id, card_id, value)
+    elif r == 'keep':
+        game_id = raw_input('GID > ')
+        print keep(game_id)

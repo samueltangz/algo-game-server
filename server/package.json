@@ -8,11 +8,16 @@
     "db-migrate": "^0.11.5",
     "db-migrate-mysql": "^1.1.10",
     "express": "^4.16.4",
+    "kue": "^0.11.6",
     "mysql": "^2.16.0",
+    "redis": "^2.8.0",
+    "redis-server": "^1.2.2",
     "socket.io": "^2.2.0"
   },
   "scripts": {
     "start": "nodemon src/index.js",
+    "lint-fix": "eslint src --fix",
+    "test-only": "jest",
     "test": "jest && codecov",
     "lint": "eslint src"
   },
@@ -29,7 +34,13 @@
   },
   "jest": {
     "coverageDirectory": "./coverage/",
-    "collectCoverageFrom": [ "src/**" ],
-    "collectCoverage": true
+    "collectCoverageFrom": [
+      "src/**"
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcovonly",
+      "html"
+    ]
   }
 }
