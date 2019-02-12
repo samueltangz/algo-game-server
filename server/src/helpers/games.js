@@ -119,6 +119,12 @@ async function initializeGame (roomId) {
   const game = await model.createGame(userCount, paddedUserIds)
   const gameId = game['id']
 
+  const joinGamePromises = []
+  userIds.forEach(userId => {
+    joinGamePromises.push(model.joinGame(userId, gameId))
+  })
+  await Promise.all(joinGamePromises)
+
   // Shuffle and create the cards in the model
   const cards = []
   for (let value = 0; value < 12; value++) {
@@ -185,10 +191,13 @@ async function endTurn (roomId, gameId) {
 }
 
 // user picks a card to attack
-async function pickAction (roomId, gameId, userId, cardId) {
+async function pickAction (userId, cardId) {
   await model.startTransaction()
 
+  const gameUser = await model.findGameUserByUserId(userId)
+  const gameId = gameUser['game_id']
   const game = await model.findGameById(gameId)
+
   const currentUserId = getCurrentUserId(game)
   const order = game['card_deck_pointer']
   if (currentUserId !== userId) throw new Error('not the user\'s turn')
@@ -209,11 +218,18 @@ async function pickAction (roomId, gameId, userId, cardId) {
 }
 
 // user attacks
-async function attackAction (roomId, gameId, userId, defendCardId, guessValue) {
+async function attackAction (userId, defendCardId, guessValue) {
   await model.startTransaction()
 
-  if (guessValue < 0 || guessValue > 11) throw new Error('invalid guess value')
+  const [ roomUser, gameUser ] = await Promise.all([
+    model.findRoomUserByUserId(userId),
+    model.findGameUserByUserId(userId)
+  ])
+  const roomId = roomUser['room_id']
+  const gameId = gameUser['game_id']
   const game = await model.findGameById(gameId)
+
+  if (guessValue < 0 || guessValue > 11) throw new Error('invalid guess value')
   const userList = getUserList(game)
   const currentUserId = getCurrentUserId(game)
   if (currentUserId !== userId) throw new Error('not the user\'s turn')
@@ -252,10 +268,18 @@ async function attackAction (roomId, gameId, userId, defendCardId, guessValue) {
 }
 
 // user keeps
-async function keepAction (roomId, gameId, userId) {
+async function keepAction (userId) {
   // if attack counter >= 1
   // end turn
+
+  const [ roomUser, gameUser ] = await Promise.all([
+    model.findRoomUserByUserId(userId),
+    model.findGameUserByUserId(userId)
+  ])
+  const roomId = roomUser['room_id']
+  const gameId = gameUser['game_id']
   const game = await model.findGameById(gameId)
+
   const currentUserId = getCurrentUserId(game)
   if (currentUserId !== userId) throw new Error('not the user\'s turn')
 
@@ -294,11 +318,14 @@ async function endGame (roomId, gameId) {
   await sendBoardState(gameId)
   await model.deltaReadyUserCount(roomId, -game['user_count'])
   const updateReadyPromises = []
+  const leaveGamePromises = []
+
   const userList = getUserList(game)
   userList.forEach(userId => {
-    updateReadyPromises.push(model.updateReady(userId, roomId, false))
+    updateReadyPromises.push(model.updateReady(userId, false))
+    leaveGamePromises.push(model.leaveGame(userId))
   })
-  await Promise.all(updateReadyPromises)
+  await Promise.all(updateReadyPromises, leaveGamePromises)
 
   await model.updateRoomStatus(roomId, roomStatus.WAITING)
 
