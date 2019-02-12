@@ -7,11 +7,14 @@ const {
   createGame, findGameById, deltaGameCardDeckPointer, updateGameTurnInitiated, deltaGameAttackCount, deltaGameScoreById, updateGameCurrentTurn
 } = require('./games')
 const {
-  findRoomsByUserId, findRoomsUsersByRoomId, findRoomsUsersByUserIdAndRoomId, joinRoom, leaveRoom, updateReady
-} = require('./rooms_users')
+  findGameUserByUserId, findGamesUsersByGameId, joinGame, leaveGame
+} = require('./games_users')
 const {
   createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
 } = require('./rooms')
+const {
+  findRoomUserByUserId, findRoomsUsersByRoomId, joinRoom, leaveRoom, updateReady
+} = require('./rooms_users')
 const {
   findUserById, findUserByToken, listTopTen
 } = require('./users')
@@ -65,13 +68,11 @@ module.exports = {
   deltaGameScoreById,
   updateGameCurrentTurn,
 
-  // rooms_users
-  findRoomsByUserId,
-  findRoomsUsersByRoomId,
-  findRoomsUsersByUserIdAndRoomId,
-  joinRoom,
-  leaveRoom,
-  updateReady,
+  // games_users
+  findGameUserByUserId,
+  findGamesUsersByGameId,
+  joinGame,
+  leaveGame,
 
   // rooms
   createRoom,
@@ -81,6 +82,13 @@ module.exports = {
   deltaReadyUserCount,
   updateRoomStatus,
   deleteRoom,
+
+  // rooms_users
+  findRoomUserByUserId,
+  findRoomsUsersByRoomId,
+  joinRoom,
+  leaveRoom,
+  updateReady,
 
   // users
   findUserById,

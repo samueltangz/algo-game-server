@@ -19,13 +19,11 @@ api.post('/action/attack', getUserFromAuthnToken,
   async (req, res) => {
     try {
       const user = res.locals.user
-      const gameId = req.body['game_id']
       const cardId = req.body['card_id']
       const value = req.body['value']
-      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
       if (typeof cardId !== 'number') throw new Error('card_id should be a number')
       if (typeof value !== 'number') throw new Error('value should be a number')
-      await attackAction(3, gameId, user['id'], cardId, value)
+      await attackAction(user['id'], cardId, value)
       return res.status(200).json({})
     } catch (err) {
       console.error(err)
@@ -41,11 +39,9 @@ api.post('/action/pick', getUserFromAuthnToken,
   async (req, res) => {
     try {
       const user = res.locals.user
-      const gameId = req.body['game_id']
       const cardId = req.body['card_id']
-      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
       if (typeof cardId !== 'number') throw new Error('card_id should be a number')
-      await pickAction(3, gameId, user['id'], cardId)
+      await pickAction(user['id'], cardId)
       return res.status(200).json({})
     } catch (err) {
       console.error(err)
@@ -61,9 +57,7 @@ api.post('/action/keep', getUserFromAuthnToken,
   async (req, res) => {
     try {
       const user = res.locals.user
-      const gameId = req.body['game_id']
-      if (typeof gameId !== 'number') throw new Error('game_id should be a number')
-      await keepAction(3, gameId, user['id'])
+      await keepAction(user['id'])
       return res.status(200).json({})
     } catch (err) {
       console.error(err)

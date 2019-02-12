@@ -20,14 +20,24 @@ function roomStatusToString (status) {
   }
 }
 
+async function isUserJoinedRoom (userId) {
+  try {
+    await model.findRoomUserByUserId(userId)
+    return true
+  } catch (err) {
+    if (err.message === 'room not found') {
+      return false
+    }
+    throw err
+  }
+}
 async function createAndJoinRoom (user) {
   try {
     await model.startTransaction()
 
     // Check if the user has joined another room
     const { 'id': userId, 'name': username } = user
-    const roomsJoined = await model.findRoomsByUserId(userId)
-    if (roomsJoined.length > 0) throw new Error('user has joined another room')
+    if (await isUserJoinedRoom(userId)) throw new Error('user has joined another room')
 
     // Create and join room
     const room = await model.createRoom()
@@ -51,20 +61,23 @@ async function joinRoom (user, roomId) {
 
     // Check if the user has joined another room
     const { 'id': userId, 'name': username } = user
-    const [ roomToJoin, roomsJoined ] = await Promise.all([
-      model.findRoomById(roomId), model.findRoomsByUserId(userId)
+    const [ roomToJoin, isJoinedRoom ] = await Promise.all([
+      model.findRoomById(roomId), isUserJoinedRoom(userId)
     ])
-    if (roomsJoined.length > 0) throw new Error('user has joined another room')
+    if (isJoinedRoom) throw new Error('user has joined another room')
     if (roomToJoin['user_count'] >= config.roomSize) throw new Error('room is full')
     if (roomToJoin['status'] !== roomStatus.WAITING) throw new Error('room is not available for joining')
 
     // Join room
-    const [ , room ] = await Promise.all([
-      model.joinRoom(userId, roomId), model.deltaUserCount(roomId, 1)
+    await Promise.all([
+      model.joinRoom(userId, roomId),
+      model.deltaUserCount(roomId, 1)
     ])
 
     await socket.joinRoom(username, roomId)
     socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
+
+    const room = await model.findRoomById(roomId)
 
     await model.commit()
     return marshalRoom(room)
@@ -80,22 +93,23 @@ async function leaveRoom (user) {
 
     // Check if the user has joined a room
     const { 'id': userId, 'name': username } = user
-    const roomsJoined = await model.findRoomsByUserId(userId)
-    if (roomsJoined.length === 0) throw new Error('user is not in a room')
-    if (roomsJoined[0]['status'] !== roomStatus.WAITING) throw new Error('room is not available for leaving')
+    const roomUser = await model.findRoomUserByUserId(userId)
 
-    const roomId = roomsJoined[0]['id']
-    const roomsUsers = await model.findRoomsUsersByUserIdAndRoomId(userId, roomId)
-    if (roomsUsers.length === 0) throw new Error('room-user entry not exist')
+    const roomId = roomUser['room_id']
+    const room = await model.findRoomById(roomId)
+    if (room['status'] !== roomStatus.WAITING) throw new Error('room is not available for leaving')
 
-    if (intToBoolean(roomsUsers[0]['is_ready'])) throw new Error('user is ready')
+    if (intToBoolean(roomUser['is_ready'])) throw new Error('user is ready')
 
     // Leave room
-    const [ , room ] = await Promise.all([
-      model.leaveRoom(userId, roomId), model.deltaUserCount(roomId, -1)
+    await Promise.all([
+      model.leaveRoom(userId),
+      model.deltaUserCount(roomId, -1)
     ])
 
-    if (room['user_count'] === 0) {
+    const updatedRoom = await model.findRoomById(roomId)
+
+    if (updatedRoom['user_count'] === 0) {
       await model.deleteRoom(roomId)
     }
 
@@ -103,7 +117,7 @@ async function leaveRoom (user) {
     await socket.leaveRoom(username, roomId)
 
     await model.commit()
-    return marshalRoom(room)
+    return marshalRoom(updatedRoom)
   } catch (err) {
     await model.rollback()
     throw err
@@ -116,19 +130,17 @@ async function updateReady (user, isReady) {
 
     // Check if the user has joined a room
     const { 'id': userId, 'name': username } = user
-    const roomsJoined = await model.findRoomsByUserId(userId)
-    if (roomsJoined.length === 0) throw new Error('user is not in a room')
-    if (roomsJoined[0]['status'] !== roomStatus.WAITING) throw new Error('ready status cannot be changed')
+    const roomUser = await model.findRoomUserByUserId(userId)
 
-    const roomId = roomsJoined[0]['id']
-    const roomsUsers = await model.findRoomsUsersByUserIdAndRoomId(userId, roomId)
-    if (roomsUsers.length === 0) throw new Error('room-user entry not exist')
+    const roomId = roomUser['room_id']
+    const room = await model.findRoomById(roomId)
+    if (room['status'] !== roomStatus.WAITING) throw new Error('ready status cannot be changed')
 
-    if (intToBoolean(roomsUsers[0]['is_ready']) === isReady) throw new Error('ready status will not be changed')
+    if (intToBoolean(roomUser['is_ready']) === isReady) throw new Error('ready status will not be changed')
 
     // Update ready status
-    let [ , room ] = await Promise.all([
-      model.updateReady(userId, roomId, isReady),
+    let [ , updatedRoom ] = await Promise.all([
+      model.updateReady(userId, isReady),
       model.deltaReadyUserCount(roomId, isReady ? 1 : -1)
     ])
 
@@ -138,15 +150,15 @@ async function updateReady (user, isReady) {
       socket.roomBroadcast(roomId, `${username} is now not ready`)
     }
 
-    if (room['user_count'] === room['ready_user_count'] && room['user_count'] >= 2) {
-      room = await model.updateRoomStatus(roomId, roomStatus.PREPARE)
+    if (updatedRoom['user_count'] === updatedRoom['ready_user_count'] && room['user_count'] >= 2) {
+      updatedRoom = await model.updateRoomStatus(roomId, roomStatus.PREPARE)
       socket.roomBroadcast(roomId, `All players are ready.  Preparing game.`)
       queue.create('initialize_game', { roomId }).save()
     }
 
     await model.commit()
 
-    return marshalRoom(room)
+    return marshalRoom(updatedRoom)
   } catch (err) {
     await model.rollback()
     throw err

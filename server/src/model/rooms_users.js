@@ -1,15 +1,12 @@
 /* global con */
-const { findRoomById } = require('./rooms')
 const { booleanToInt } = require('../utils/utils')
 
-async function findRoomsByUserId (userId) {
+async function findRoomUserByUserId (userId) {
   return new Promise((resolve, reject) => {
-    con.query(`SELECT rooms.* FROM rooms LEFT JOIN rooms_users
-      ON rooms.id = rooms_users.room_id
-      WHERE rooms_users.user_id = ?`, [ userId ],
-    function (err, rooms, _) {
+    con.query('SELECT * FROM rooms_users WHERE user_id = ?', [ userId ], function (err, roomsUsers, _) {
       if (err) return reject(err)
-      resolve(rooms)
+      if (roomsUsers.length !== 1) return reject(new Error('user is not in a room'))
+      resolve(roomsUsers[0])
     })
   })
 }
@@ -17,15 +14,6 @@ async function findRoomsByUserId (userId) {
 async function findRoomsUsersByRoomId (roomId) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM rooms_users WHERE room_id = ?', [ roomId ], function (err, roomsUsers, _) {
-      if (err) return reject(err)
-      resolve(roomsUsers)
-    })
-  })
-}
-
-async function findRoomsUsersByUserIdAndRoomId (userId, roomId) {
-  return new Promise((resolve, reject) => {
-    con.query('SELECT * FROM rooms_users WHERE user_id = ? AND room_id = ?', [ userId, roomId ], function (err, roomsUsers, _) {
       if (err) return reject(err)
       resolve(roomsUsers)
     })
@@ -40,35 +28,31 @@ async function joinRoom (userId, roomId) {
       resolve()
     })
   })
-  return findRoomById(roomId)
 }
 
-async function leaveRoom (userId, roomId) {
+async function leaveRoom (userId) {
   await new Promise((resolve, reject) => {
-    con.query('DELETE FROM rooms_users WHERE room_id = ? AND user_id = ? LIMIT 1', [ roomId, userId ], function (err, result) {
+    con.query('DELETE FROM rooms_users WHERE user_id = ? LIMIT 1', [ userId ], function (err, result) {
       if (err) return reject(err)
       if (result.affectedRows !== 1) return reject(new Error('cannot leave room'))
       resolve()
     })
   })
-  return findRoomById(roomId)
 }
 
-async function updateReady (userId, roomId, isReady) {
+async function updateReady (userId, isReady) {
   await new Promise((resolve, reject) => {
-    con.query('UPDATE rooms_users SET is_ready = ? WHERE room_id = ? AND user_id = ? LIMIT 1', [ booleanToInt(isReady), roomId, userId ], function (err, result) {
+    con.query('UPDATE rooms_users SET is_ready = ? WHERE user_id = ? LIMIT 1', [ booleanToInt(isReady), userId ], function (err, result) {
       if (err) return reject(err)
       if (result.changedRows !== 1) return reject(new Error('cannot update ready status'))
       resolve()
     })
   })
-  return findRoomById(roomId)
 }
 
 module.exports = {
-  findRoomsByUserId,
+  findRoomUserByUserId,
   findRoomsUsersByRoomId,
-  findRoomsUsersByUserIdAndRoomId,
 
   joinRoom,
   leaveRoom,
