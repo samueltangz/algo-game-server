@@ -25,7 +25,7 @@ async function isUserJoinedRoom (userId) {
     await model.findRoomUserByUserId(userId)
     return true
   } catch (err) {
-    if (err.message === 'room not found') {
+    if (err.message === 'user is not in a room') {
       return false
     }
     throw err

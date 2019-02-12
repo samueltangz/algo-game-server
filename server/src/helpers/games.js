@@ -194,11 +194,7 @@ async function endTurn (roomId, gameId) {
 async function pickAction (userId, cardId) {
   await model.startTransaction()
 
-  const [ roomUser, gameUser ] = await Promise.all([
-    model.findRoomUserByUserId(userId),
-    model.findGameUserByUserId(userId)
-  ])
-  const roomId = roomUser['room_id']
+  const gameUser = await model.findGameUserByUserId(userId)
   const gameId = gameUser['game_id']
   const game = await model.findGameById(gameId)
 
@@ -327,7 +323,7 @@ async function endGame (roomId, gameId) {
   const userList = getUserList(game)
   userList.forEach(userId => {
     updateReadyPromises.push(model.updateReady(userId, false))
-    leaveGamePromises.push(model.leaveRoom(userId))
+    leaveGamePromises.push(model.leaveGame(userId))
   })
   await Promise.all(updateReadyPromises, leaveGamePromises)
 
