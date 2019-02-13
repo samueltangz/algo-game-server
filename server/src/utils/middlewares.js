@@ -1,3 +1,5 @@
+const cors = require('cors')
+
 const { findUserByToken } = require('../model/users')
 
 const getUserFromAuthnToken = async function (req, res, next) {
@@ -24,6 +26,9 @@ const getUserFromAuthnToken = async function (req, res, next) {
   }
 }
 
+const enableCors = cors()
+
 module.exports = {
-  getUserFromAuthnToken
+  getUserFromAuthnToken,
+  enableCors
 }

@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-// import admin from './admin'
+import messages from './messages'
+import users from './users'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    // admin
+    messages,
+    users
   }
 })
