@@ -1,7 +1,9 @@
 <template>
   <div>
-    {{ name }}<br>
-    {{ token }}
+    <input
+      v-model="token"
+      placeholder="Token"
+      size=50>
     <hr>
     <xmp>{{ JSON.stringify(boardState, 0, 2) }}</xmp>
     <hr>
@@ -15,7 +17,7 @@
 
 <script>
 const io = require('socket.io-client')
-const socket = io('http://0.0.0.0:14937')
+const socket = io(`http://${window.location.hostname}:14937`)
 
 export default {
   name: 'HelloWorld',
@@ -28,22 +30,8 @@ export default {
     }
   },
   mounted () {
-    if (Math.random() < 1.0 / 3.0) {
-      this.name = 'Samuel'
-      this.token = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-    } else if (Math.random() < 1.0 / 2.0) {
-      this.name = 'Wing'
-      this.token = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
-    } else {
-      this.name = 'Ken'
-      this.token = 'pc5LQulClke89o_E0Wyu6-uQzfx0eMpHuuSv4h4xTg4'
-    }
-
-    const token = this.token
-
     const { syncBoardState, appendMessage } = this
     socket.on('connect', () => {
-      socket.emit('token', token)
       socket.on('game_broadcast', function (message) {
         appendMessage({ content: message, type: 'game_broadcast' })
       })
@@ -55,6 +43,9 @@ export default {
       })
       socket.on('room_message', function (message) {
         appendMessage({ content: message, type: 'room_message' })
+      })
+      socket.on('disconnect', function () {
+        alert('Socket disconnected.  Please reload.')
       })
       socket.on('game_board_state', syncBoardState)
     })
@@ -75,6 +66,14 @@ export default {
     appendMessage: function (message) {
       message.id = this.messages.length + 1
       this.messages.push(message)
+    }
+  },
+
+  watch: {
+    token (val) {
+      if (val.length === 43) {
+        socket.emit('token', val)
+      }
     }
   }
 }
