@@ -167,6 +167,8 @@ async function initiateTurn (roomId, gameId) {
   const game = await model.findGameById(gameId)
   const currentUserId = getCurrentUserId(game)
 
+  await model.unpickAllCardsByGameId(gameId)
+
   const order = game['card_deck_pointer']
   if (order < 24) await model.drawCard(gameId, order, currentUserId, true)
   await model.deltaGameCardDeckPointer(gameId, 1)
