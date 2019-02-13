@@ -24,7 +24,7 @@ app.listen(config.portAPI, function () {
 // Socket
 const server = http.createServer(app)
 const io = socket(server, {
-  origins: '0.0.0.0:*'
+  origins: '*:*'
 })
 
 server.listen(config.portSocket, function () {

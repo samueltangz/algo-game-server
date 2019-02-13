@@ -44,7 +44,7 @@ async function createAndJoinRoom (user) {
     const { 'id': roomId } = room
     await model.joinRoom(userId, roomId)
 
-    await socket.joinRoom(username, roomId)
+    await socket.joinRoom(userId, roomId)
     socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
 
     await model.commit()
@@ -74,7 +74,7 @@ async function joinRoom (user, roomId) {
       model.deltaUserCount(roomId, 1)
     ])
 
-    await socket.joinRoom(username, roomId)
+    await socket.joinRoom(userId, roomId)
     socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
 
     const room = await model.findRoomById(roomId)
@@ -114,7 +114,7 @@ async function leaveRoom (user) {
     }
 
     socket.roomBroadcast(roomId, `${username} left room #${roomId}`)
-    await socket.leaveRoom(username, roomId)
+    await socket.leaveRoom(userId, roomId)
 
     await model.commit()
     return marshalRoom(updatedRoom)
