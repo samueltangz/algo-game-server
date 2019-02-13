@@ -19,7 +19,13 @@ api.get('/top10',
     try {
       const users = await listTopTen()
       return res.status(200).json({
-        'users': users
+        'users': users.map(user => {
+          return {
+            id: user.id,
+            name: user.name,
+            rating: user.rating
+          }
+        })
       })
     } catch (err) {
       console.error(err)
