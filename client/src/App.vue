@@ -19,7 +19,7 @@ export default {
   name: 'App',
 
   mounted () {
-    store.dispatch('users/update', 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8')
+    store.dispatch('users/update', 'BB5cxBvtvfmprVgPn5yvxYoEHQu6eHnqeJgl0fTx0B4')
     this.initSocket()
   },
 

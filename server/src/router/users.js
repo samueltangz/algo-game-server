@@ -32,7 +32,11 @@ api.get('/top10',
       const users = await model.listTopTen()
       return res.status(200).json({
         'users': users.map(user => {
-          return { id: user.id, name: user.name, rating: user.rating }
+          return {
+            id: user.id,
+            name: user.name,
+            rating: user.rating
+          }
         })
       })
     } catch (err) {

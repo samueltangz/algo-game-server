@@ -2,50 +2,56 @@ import time
 import requests
 
 DOMAIN = 'http://0.0.0.0:14938'
-TOKEN = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-TOKEN = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
 
 def me():
+    global TOKEN
     r = requests.get(DOMAIN + '/users/me', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def top10():
+    global TOKEN
     r = requests.get(DOMAIN + '/users/top10')
     return r.status_code, r.text
 
 def create_room():
+    global TOKEN
     r = requests.post(DOMAIN + '/rooms', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def join_room(room_id):
+    global TOKEN
     r = requests.post(DOMAIN + '/rooms/join/' + room_id, headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def leave_room():
+    global TOKEN
     r = requests.delete(DOMAIN + '/rooms/join', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def ready():
+    global TOKEN
     r = requests.put(DOMAIN + '/rooms/ready', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def unready():
+    global TOKEN
     r = requests.delete(DOMAIN + '/rooms/ready', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
 def pick(card_id):
+    global TOKEN
     r = requests.post(DOMAIN + '/games/action/pick', headers = {
         'authorization': 'Bearer %s' % TOKEN
     }, json={
@@ -54,6 +60,7 @@ def pick(card_id):
     return r.status_code, r.text
 
 def attack(card_id, value):
+    global TOKEN
     r = requests.post(DOMAIN + '/games/action/attack', headers = {
         'authorization': 'Bearer %s' % TOKEN
     }, json={
@@ -63,19 +70,16 @@ def attack(card_id, value):
     return r.status_code, r.text
 
 def keep():
+    global TOKEN
     r = requests.post(DOMAIN + '/games/action/keep', headers = {
         'authorization': 'Bearer %s' % TOKEN
     })
     return r.status_code, r.text
 
+TOKEN = raw_input('TOKEN > ').strip()
+print me()
+
 while True:
-    t = int(raw_input('TKN > ').strip())
-    if t == 0:
-        TOKEN = 'xCYZnHjSfm62W5Mg9XfPt2KCucwlfexXIwyqZNkDZ-8'
-    elif t == 1:
-        TOKEN = 'iAUAKT30rIJvp4lVcbfEhHaZOsIX5oITKHVSXXSsaYM'
-    else:
-        TOKEN = 'pc5LQulClke89o_E0Wyu6-uQzfx0eMpHuuSv4h4xTg4'
     r = raw_input('ACT > ').strip()
     if r == 'me':
         print me()
