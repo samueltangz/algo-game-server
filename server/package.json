@@ -19,7 +19,8 @@
     "lint-fix": "eslint src --fix",
     "test-only": "jest",
     "test": "jest && codecov",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "prepare": "db-migrate up"
   },
   "devDependencies": {
     "codecov": "^3.1.0",
