@@ -20,7 +20,7 @@
     "test-only": "jest",
     "test": "jest && codecov",
     "lint": "eslint src",
-    "prepare-db": "eslint src"
+    "prepare-db": "db-migrate up"
   },
   "devDependencies": {
     "codecov": "^3.1.0",
