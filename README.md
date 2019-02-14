@@ -23,8 +23,8 @@ cp src/config.example.js src/config.js
 # Install yarn dependencies
 yarn install
 
-# Prepare the environment: Perform DB migration
-yarn prepare
+# Prepare the database by performing migration
+yarn prepare-db
 
 # Start
 yarn start
