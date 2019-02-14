@@ -11,7 +11,7 @@ import { mapState, mapGetters } from 'vuex'
 import router from '@/router'
 
 export default {
-  name: 'Rooms',
+  name: 'Room',
   components: {},
 
   props: {

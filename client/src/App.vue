@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    {{ user }} / {{ authnToken }}
-    {{ isLoggedIn }}
+    {{ user }}
     <router-view/>
   </div>
 </template>
