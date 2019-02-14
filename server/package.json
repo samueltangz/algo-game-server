@@ -16,10 +16,10 @@
   },
   "scripts": {
     "start": "nodemon src/index.js",
-    "lint-fix": "eslint src --fix",
     "test-only": "jest",
     "test": "jest && codecov",
-    "lint": "eslint src",
+    "lint-fix": "eslint src --fix",
+    "lint": "eslint src"
   },
   "devDependencies": {
     "codecov": "^3.1.0",
