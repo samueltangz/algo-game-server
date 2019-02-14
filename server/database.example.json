@@ -1,9 +1,0 @@
-{
-  "dev": {
-    "driver": "mysql",
-    "user": "algo-dev",
-    "password": "development",
-    "host": "localhost",
-    "database": "algo_development"
-  }
-}
