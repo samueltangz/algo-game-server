@@ -1,7 +1,14 @@
 <template>
-  <div>
-    You are in game #{{ gameId }} / {{ isInGame }}, {{ isInRoom }}
-  </div>
+  <v-layout row wrap>
+    <v-flex xs12>
+      <h3 class="display-1">
+        Game {{ gameId }}
+      </h3>
+    </v-flex>
+    <v-flex>
+      ...
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -23,7 +30,8 @@ export default {
 
   computed: {
     ...mapState('users', [
-      'user'
+      'user',
+      'authnToken'
     ]),
     ...mapGetters('users', [
       'isInRoom',
@@ -34,18 +42,7 @@ export default {
 
   created () {},
   mounted () {},
-  updated () {
-    if (!this.isInGame && !this.isInRoom) {
-      router.push({
-        name: 'Rooms'
-      })
-    } else if (!this.isInGame && this.isInRoom) {
-      router.push({
-        name: 'Room',
-        params: { roomId: this.user.roomId }
-      })
-    }
-  },
+  updated () {},
   destroyed () {},
 
   methods: {}

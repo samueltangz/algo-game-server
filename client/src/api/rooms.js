@@ -7,7 +7,7 @@ async function listRooms () {
 }
 
 async function createRoom (authnToken) {
-  const res = await axios.post(`${API_HOSTNAME}/rooms`, {
+  const res = await axios.post(`${API_HOSTNAME}/rooms`, {}, {
     headers: {
       'Authorization': `Bearer ${authnToken}`
     }
@@ -16,7 +16,7 @@ async function createRoom (authnToken) {
 }
 
 async function joinRoom (authnToken, roomId) {
-  const res = await axios.post(`${API_HOSTNAME}/rooms/join/${roomId}`, {
+  const res = await axios.post(`${API_HOSTNAME}/rooms/join/${roomId}`, {}, {
     headers: {
       'Authorization': `Bearer ${authnToken}`
     }
@@ -34,7 +34,7 @@ async function leaveRoom (authnToken) {
 }
 
 async function readyRoom (authnToken) {
-  const res = await axios.put(`${API_HOSTNAME}/rooms/ready`, {
+  const res = await axios.put(`${API_HOSTNAME}/rooms/ready`, {}, {
     headers: {
       'Authorization': `Bearer ${authnToken}`
     }

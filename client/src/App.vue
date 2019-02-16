@@ -1,8 +1,28 @@
+
 <template>
-  <div id="app">
-    {{ user }}
-    <router-view/>
-  </div>
+  <v-app id="app">
+    <navigation-bar />
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout row>
+          <v-flex xs9 class="mx-1">
+            <router-view />
+          </v-flex>
+          <v-flex xs3 class="mx-1">
+            <message-box />
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+    <v-footer
+      app
+      fixed
+      class="pa-3">
+      <v-spacer />
+      <span>Made with &hearts; by Samuel.  2019</span>
+    </v-footer>
+
+  </v-app>
 </template>
 
 <script>
@@ -11,11 +31,18 @@ import { mapState, mapGetters } from 'vuex'
 import config from '@/config'
 import store from '@/store'
 
+import MessageBox from '@/components/TheMessageBox.vue'
+import NavigationBar from '@/components/TheNavigationBar.vue'
+
 const io = require('socket.io-client')
 const socket = io(config.SOCKET_HOSTNAME)
 
 export default {
   name: 'App',
+  components: {
+    MessageBox,
+    NavigationBar
+  },
 
   mounted () {
     store.dispatch('users/update', 'BB5cxBvtvfmprVgPn5yvxYoEHQu6eHnqeJgl0fTx0B4')
