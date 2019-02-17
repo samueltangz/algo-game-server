@@ -85,7 +85,9 @@ export default {
         socket.on('game_state', function (gameId) {
           store.commit('users/setGameId', gameId)
         })
-        socket.on('game_board_state', console.log)
+        socket.on('game_board_state', function (boardState) {
+          store.commit('games/setBoardState', boardState)
+        })
       })
 
       socket.on('disconnect', function () {

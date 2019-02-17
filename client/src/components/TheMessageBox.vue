@@ -10,10 +10,10 @@
     </v-toolbar>
     <div
       class="scroll-y"
-      style="max-height: calc(100vh - 220px);">
+      style="height: calc(100vh - 220px);">
       <v-list
       two-line
-        style="height: 1000px;">
+        style="min-height: calc(100vh - 220px);">
         <template
           v-for="(message, index) in messages">
           <v-divider

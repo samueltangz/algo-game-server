@@ -337,6 +337,9 @@ async function endGame (roomId, gameId) {
 }
 
 module.exports = {
+  getCurrentBoardState,
+  maskBoardState,
+
   initializeGame,
   initiateTurn,
   endTurn,

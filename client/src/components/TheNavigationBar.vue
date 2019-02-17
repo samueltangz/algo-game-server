@@ -61,15 +61,23 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'NavigationBar',
   components: {},
 
   props: {},
 
-  data: () => ({}),
+  data: () => ({
+    isLoggedIn: false
+  }),
 
-  computed: {},
+  computed: {
+    ...mapGetters('users', [
+      // 'isLoggedIn'
+    ])
+  },
 
   watch: {},
 
