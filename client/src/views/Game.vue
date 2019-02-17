@@ -51,7 +51,7 @@
                     textDecoration: card.isRevealed ? 'line-through' : undefined
                   }"
                   @click="preparePick(card)">
-                  [{{ card.color === 'black' ? 'B' : 'W' }}{{ card.value }}]
+                  [#{{ card.id }} - {{ card.color === 'black' ? 'B' : 'W' }}{{ card.value }}]
                 </span>
               </span>
             </div>
@@ -66,7 +66,7 @@
                     textDecoration: card.isRevealed ? 'line-through' : undefined
                   }"
                   @click="prepareAttack(card)">
-                  [{{ card.color === 'black' ? 'B' : 'W' }}{{ card.value === undefined ? '?' : card.value }}]
+                  [#{{ card.id }} - {{ card.color === 'black' ? 'B' : 'W' }}{{ card.value === undefined ? '?' : card.value }}]
                 </span>
               </span>
             </div>
@@ -102,7 +102,6 @@
         Keep
       </v-btn>
     </v-flex>
-    {{ newBoardState }}
   </v-layout>
 </template>
 

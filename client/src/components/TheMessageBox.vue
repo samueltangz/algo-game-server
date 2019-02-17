@@ -12,7 +12,8 @@
       class="scroll-y"
       style="height: calc(100vh - 220px);">
       <v-list
-      two-line
+        ref="messages-container"
+        two-line
         style="min-height: calc(100vh - 220px);">
         <template
           v-for="(message, index) in messages">
@@ -57,6 +58,11 @@ export default {
       if (pendingMessages.length === 0) return
       this.messages.push(pendingMessages[0])
       store.commit('messages/pop')
+
+      this.$nextTick(() => {
+        const messagesContainer = this.$refs['messages-container'].$parent.$el.children[1]
+        messagesContainer.scrollTop = messagesContainer.scrollHeight
+      })
     }
   },
 
