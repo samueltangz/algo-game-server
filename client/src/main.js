@@ -2,9 +2,15 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
+import VueKonva from 'vue-konva'
+
 import router from './router'
 import store from './store'
 
+Vue.use(Vuetify)
+Vue.use(VueKonva)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

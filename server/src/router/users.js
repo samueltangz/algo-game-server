@@ -1,15 +1,27 @@
 const express = require('express')
 
 const { getUserFromAuthnToken } = require('../utils/middlewares')
-const { listTopTen } = require('./../model/users')
+const model = require('./../model')
 
 const api = express.Router()
 
 api.get('/me', getUserFromAuthnToken,
   async (req, res) => {
     const me = res.locals.user
+    let roomUser = {}
+    let gameUser = {}
+    try {
+      roomUser = await model.findRoomUserByUserId(me['id'])
+      gameUser = await model.findGameUserByUserId(me['id'])
+    } catch (err) {}
     return res.status(200).json({
-      'user': me
+      'user': {
+        id: me.id,
+        name: me.name,
+        rating: me.rating,
+        roomId: roomUser['room_id'],
+        gameId: gameUser['game_id']
+      }
     }).end()
   }
 )
@@ -17,7 +29,7 @@ api.get('/me', getUserFromAuthnToken,
 api.get('/top10',
   async (req, res) => {
     try {
-      const users = await listTopTen()
+      const users = await model.listTopTen()
       return res.status(200).json({
         'users': users.map(user => {
           return {

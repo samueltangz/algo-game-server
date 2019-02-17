@@ -1,16 +1,31 @@
 const express = require('express')
 
 const { getUserFromAuthnToken } = require('../utils/middlewares')
-const { pickAction, attackAction, keepAction } = require('../helpers/games')
+const { pickAction, attackAction, keepAction, getCurrentBoardState, maskBoardState } = require('../helpers/games')
+const model = require('./../model')
 
 const api = express.Router()
 
 // return current game state
 api.get('/', getUserFromAuthnToken,
   async (req, res) => {
-    return res.status(200).json({
-      'message': 'wip'
-    })
+    try {
+      const user = res.locals.user
+      const userId = user['id']
+      const gameUser = await model.findGameUserByUserId(userId)
+      const gameId = gameUser['game_id']
+      const game = await model.findGameById(gameId)
+      const cardList = await model.listCardsByGameId(gameId)
+      const boardState = getCurrentBoardState(game, cardList)
+      return res.status(200).json({
+        'boardState': maskBoardState(userId, boardState)
+      })
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
+      }).end()
+    }
   }
 )
 

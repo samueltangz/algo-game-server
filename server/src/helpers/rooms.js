@@ -31,6 +31,12 @@ async function isUserJoinedRoom (userId) {
     throw err
   }
 }
+
+async function listRooms () {
+  const rooms = await model.listRooms()
+  return rooms.map(marshalRoom)
+}
+
 async function createAndJoinRoom (user) {
   try {
     await model.startTransaction()
@@ -44,6 +50,7 @@ async function createAndJoinRoom (user) {
     const { 'id': roomId } = room
     await model.joinRoom(userId, roomId)
 
+    socket.roomState(userId, roomId)
     await socket.joinRoom(userId, roomId)
     socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
 
@@ -74,6 +81,7 @@ async function joinRoom (user, roomId) {
       model.deltaUserCount(roomId, 1)
     ])
 
+    socket.roomState(userId, roomId)
     await socket.joinRoom(userId, roomId)
     socket.roomBroadcast(roomId, `${username} joined room #${roomId}`)
 
@@ -113,6 +121,7 @@ async function leaveRoom (user) {
       await model.deleteRoom(roomId)
     }
 
+    socket.roomState(userId, undefined)
     socket.roomBroadcast(roomId, `${username} left room #${roomId}`)
     await socket.leaveRoom(userId, roomId)
 
@@ -177,6 +186,7 @@ module.exports = {
   roomStatus,
   roomStatusToString,
 
+  listRooms,
   createAndJoinRoom,
   joinRoom,
   leaveRoom,

@@ -1,9 +1,25 @@
 const express = require('express')
 
 const { getUserFromAuthnToken } = require('../utils/middlewares')
-const { createAndJoinRoom, joinRoom, leaveRoom, updateReady } = require('../helpers/rooms')
+const { listRooms, createAndJoinRoom, joinRoom, leaveRoom, updateReady } = require('../helpers/rooms')
 
 const api = express.Router()
+
+api.get('/',
+  async (req, res) => {
+    try {
+      const rooms = await listRooms()
+      return res.status(200).json({
+        'rooms': rooms
+      })
+    } catch (err) {
+      console.error(err)
+      return res.status(500).json({
+        'error': err.message
+      }).end()
+    }
+  }
+)
 
 api.post('/', getUserFromAuthnToken,
   async (req, res) => {

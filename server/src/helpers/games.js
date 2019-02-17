@@ -255,11 +255,11 @@ async function attackAction (userId, defendCardId, guessValue) {
       model.deltaGameScoreById(gameId, attackerUserOrder + 1, guessValue === 6 ? +20 : +10),
       model.deltaGameScoreById(gameId, defenderUserOrder + 1, guessValue === 6 ? -20 : -10)
     ])
-    socket.roomBroadcast(roomId, 'Correct guess!')
+    socket.roomBroadcast(roomId, `User #${userId} guessed ${guessValue} for card #${defendCard['id']}.  That is a correct guess!`)
   } else {
     await model.revealCardById(attackCard['id'])
     await endTurn(roomId, gameId)
-    socket.roomBroadcast(roomId, 'Wrong guess!')
+    socket.roomBroadcast(roomId, `User #${userId} guessed ${guessValue} for card #${defendCard['id']}.  That is a wrong guess!`)
   }
 
   await sendBoardState(gameId)
@@ -337,6 +337,9 @@ async function endGame (roomId, gameId) {
 }
 
 module.exports = {
+  getCurrentBoardState,
+  maskBoardState,
+
   initializeGame,
   initiateTurn,
   endTurn,

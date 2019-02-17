@@ -10,7 +10,7 @@ const {
   findGameUserByUserId, findGamesUsersByGameId, joinGame, leaveGame
 } = require('./games_users')
 const {
-  createRoom, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
+  createRoom, listRooms, findRoomById, findRoomsByStatus, deltaUserCount, deltaReadyUserCount, updateRoomStatus, deleteRoom
 } = require('./rooms')
 const {
   findRoomUserByUserId, findRoomsUsersByRoomId, joinRoom, leaveRoom, updateReady
@@ -76,6 +76,7 @@ module.exports = {
 
   // rooms
   createRoom,
+  listRooms,
   findRoomById,
   findRoomsByStatus,
   deltaUserCount,

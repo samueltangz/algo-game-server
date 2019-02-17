@@ -11,6 +11,15 @@ async function createRoom () {
   return findRoomById(id)
 }
 
+async function listRooms () {
+  return new Promise((resolve, reject) => {
+    con.query('SELECT * FROM rooms', function (err, rooms, _) {
+      if (err) return reject(err)
+      resolve(rooms)
+    })
+  })
+}
+
 async function findRoomById (id) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM rooms WHERE id = ? LIMIT 1', [ id ], function (err, rooms, _) {
@@ -75,6 +84,7 @@ async function deleteRoom (id) {
 
 module.exports = {
   createRoom,
+  listRooms,
   findRoomById,
   findRoomsByStatus,
   deltaUserCount,
