@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+    redis:
+        container_name: algo_redis
+        image: redis
+        ports:
+          - "6379:6379"
+    mysql:
+        container_name: algo_mysql
+        # mysql:8 sucks
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_DATABASE: algo_development
+            MYSQL_USER: algo-dev
+            MYSQL_PASSWORD: development
+            MYSQL_ROOT_PASSWORD: development
+        ports:
+          - '3306:3306'
+        volumes:
+          # data/mysql is put in the host to store the db data
+          - ./data/mysql:/var/lib/mysql
+    algo_server:
+        build: .
+        image: algo_server
+        container_name: algo_server
+        links: 
+          - mysql
+          - redis
+        depends_on:
+          - mysql
+          - redis
+        command: sleep 600
+        # image: put your image in a registry here
+        # command: ["./wait-for-it/wait-for-it.sh", "mysql:3306", "-t", "0", "--", "yarn", "prepare-db"]
