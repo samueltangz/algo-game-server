@@ -19,6 +19,11 @@ jobs:
             retry=12;
             while ! (curl -s --fail -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'http://127.0.0.1:3000/users/top10' > /dev/null) && [ $retry -gt 0 ] ; do echo "retrying curl, attempts remaining: $retry"; retry=$((retry-1)); if [ $retry -eq 0 ]; then echo "fail"; exit 1; fi; sleep 5; done
             docker-compose down
+      - run:
+           name: "Failure: output container logs to console"
+           command: |
+             docker-compose logs
+           when: on_fail
   test_client:
     docker:
       - image: circleci/node:11.8.0
