@@ -5,6 +5,8 @@
 version: 2
 jobs:
   prepare:
+    docker:
+      - image: circleci/node:11.8.0
     steps:
       - checkout
       - setup_remote_docker:
