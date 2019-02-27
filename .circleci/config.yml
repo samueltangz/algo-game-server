@@ -88,4 +88,5 @@ workflows:
           - prepare
       - test_server:
           requires:
+          - prepare
       - main
