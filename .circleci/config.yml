@@ -5,37 +5,14 @@
 version: 2
 jobs:
   prepare:
-    docker:
-      - image: circleci/node:11.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - client-{{ checksum "client/package.json" }}
-          - client-
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
-          name: Install client packages
-          command: cd client && yarn install
-      - save_cache:
-          paths:
-            - client/node_modules
-          key: client-{{ checksum "client/package.json" }}
-      - restore_cache:
-          keys:
-          - server-{{ checksum "server/package.json" }}
-          - server-
-      - run:
-          name: Install server packages
-          command: cd server && yarn install
-      - save_cache:
-          paths:
-            - server/node_modules
-          key: server-{{ checksum "server/package.json" }}
-      - persist_to_workspace:
-          root: .
-          paths:
-            - client
-            - server
+          name: verify docker compose build
+          command: |
+            docker-compose up
   test_client:
     docker:
       - image: circleci/node:11.8.0
@@ -65,8 +42,5 @@ workflows:
     jobs:
       - prepare
       - test_client:
-          requires:
-          - prepare
-      - test_server:
           requires:
           - prepare

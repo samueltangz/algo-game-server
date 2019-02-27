@@ -3,7 +3,7 @@ const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const http = require('http')
 const socket = require('socket.io')
-const RedisServer = require('redis-server')
+// const RedisServer = require('redis-server')
 const redis = require('redis')
 const kue = require('kue')
 
@@ -50,18 +50,27 @@ con.connect(function (err) {
 global.con = con
 
 // Redis
-const redisServer = new RedisServer({
-  port: config.portRedis
+// const redisServer = new RedisServer({
+//   port: config.portRedis
+// })
+// redisServer.open(function (err) {
+//   if (err) throw err
+//   console.log(`Redis server listening on port ${config.portRedis}`)
+// })
+const redisClient = redis.createClient({
+  host: "redis",
+  port: 6379
 })
-redisServer.open(function (err) {
-  if (err) throw err
-  console.log(`Redis server listening on port ${config.portRedis}`)
-})
-const redisClient = redis.createClient()
+
 global.redisClient = redisClient
 
 // Job queue
-const queue = kue.createQueue()
+const queue = kue.createQueue({
+    redis: {
+        host: "redis",
+        port: 6379
+    }
+})
 queue.on('job enqueue', function (id, type) {
   console.log(`New job #${id} (type: ${type})`)
 }).on('job complete', function (id, result) {

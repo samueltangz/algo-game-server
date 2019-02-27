@@ -39,3 +39,13 @@ yarn install
 # Start
 yarn start
 ```
+
+### Docker
+
+```bash 
+# to build
+$ docker-compose build
+
+# to start all services
+$ docker-compose up
+```
