@@ -9,19 +9,33 @@ jobs:
       - image: circleci/node:11.8.0
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - restore_cache:
+          keys:
+          - client-{{ checksum "client/package.json" }}
+          - client-
       - run:
-          name: verify docker compose build
-          command: |
-            docker-compose up -d
-            docker exec algo_server bash -c 'retry=12; while ! (curl -s --fail -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'http://127.0.0.1:3000/users/top10' > /dev/null) && [ $retry -gt 0 ] ; do echo "retrying curl, attempts remaining: $retry"; retry=$((retry-1)); if [ $retry -eq 0 ]; then echo "fail"; exit 1; fi; sleep 5; done'
-            docker-compose down
+          name: Install client packages
+          command: cd client && yarn install
+      - save_cache:
+          paths:
+            - client/node_modules
+          key: client-{{ checksum "client/package.json" }}
+      - restore_cache:
+          keys:
+          - server-{{ checksum "server/package.json" }}
+          - server-
       - run:
-           name: "Failure: output container logs to console"
-           command: |
-             docker-compose logs
-           when: on_fail
+          name: Install server packages
+          command: cd server && yarn install
+      - save_cache:
+          paths:
+            - server/node_modules
+          key: server-{{ checksum "server/package.json" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - client
+            - server
   test_client:
     docker:
       - image: circleci/node:11.8.0
@@ -45,6 +59,25 @@ jobs:
       - run:
           name: Running server tests
           command: cd server && yarn test
+  main:
+    docker:
+      - image: circleci/node:11.8.0
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Verify docker compose build
+          command: |
+            cd server
+            docker-compose up -d
+            docker exec algo_server bash -c 'retry=12; while ! (curl -s --fail -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'http://127.0.0.1:3000/users/top10' > /dev/null) && [ $retry -gt 0 ] ; do echo "retrying curl, attempts remaining: $retry"; retry=$((retry-1)); if [ $retry -eq 0 ]; then echo "fail"; exit 1; fi; sleep 5; done'
+            docker-compose down
+      - run:
+           name: "Failure: output container logs to console"
+           command: |
+             docker-compose logs
+           when: on_fail
 workflows:
   version: 2
   build:
@@ -53,3 +86,6 @@ workflows:
       - test_client:
           requires:
           - prepare
+      - test_server:
+          requires:
+      - main

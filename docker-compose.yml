@@ -33,7 +33,7 @@ services:
         ports:
           - '3000:3000'
           - '3001:3001'
-        command: bash -c 'while ! (mysqladmin ping --host=mysql --user=algo-dev --password=development > /dev/null 2>&1); do echo "mysql not yet ready"; sleep 3; done; yarn prepare-db; yarn start'
+        command: bash -c 'cd server && while ! (mysqladmin ping --host=mysql --user=algo-dev --password=development > /dev/null 2>&1); do echo "mysql not yet ready"; sleep 3; done; yarn prepare-db; yarn start'
 
 volumes:
   dbdata:

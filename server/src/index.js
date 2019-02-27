@@ -58,7 +58,7 @@ global.con = con
 //   console.log(`Redis server listening on port ${config.portRedis}`)
 // })
 const redisClient = redis.createClient({
-  host: "redis",
+  host: 'redis',
   port: 6379
 })
 
@@ -66,11 +66,12 @@ global.redisClient = redisClient
 
 // Job queue
 const queue = kue.createQueue({
-    redis: {
-        host: "redis",
-        port: 6379
-    }
+  redis: {
+    host: 'redis',
+    port: 6379
+  }
 })
+
 queue.on('job enqueue', function (id, type) {
   console.log(`New job #${id} (type: ${type})`)
 }).on('job complete', function (id, result) {
