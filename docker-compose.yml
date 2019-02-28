@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+    redis:
+        container_name: algo_redis
+        image: redis
+        restart: always
+    mysql:
+        container_name: algo_mysql
+        # mysql:8 sucks
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_DATABASE: algo_development
+            MYSQL_USER: algo-dev
+            MYSQL_PASSWORD: development
+            MYSQL_ROOT_PASSWORD: development
+        volumes:
+          # data/mysql is put in the host to store the db data
+          # - data/mysql:/var/lib/mysql
+          - dbdata:/var/lib/mysql
+    algo_server:
+        build: .
+        container_name: algo_server
+        image: algo_server
+        restart: always
+        links: 
+          - mysql
+          - redis
+        depends_on:
+          - mysql
+          - redis
+        ports:
+          - '3000:3000'
+          - '3001:3001'
+        command: bash -c 'cd server && while ! (mysqladmin ping --host=mysql --user=algo-dev --password=development > /dev/null 2>&1); do echo "mysql not yet ready"; sleep 3; done; yarn prepare-db; yarn start'
+
+volumes:
+  dbdata:
+    # non-persistent db data
+    driver: local

@@ -59,6 +59,25 @@ jobs:
       - run:
           name: Running server tests
           command: cd server && yarn test
+  main:
+    docker:
+      - image: circleci/node:11.8.0
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Verify docker compose build
+          command: |
+            cd server
+            docker-compose up -d
+            docker exec algo_server bash -c 'retry=12; while ! (curl -s --fail -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'http://127.0.0.1:3000/users/top10' > /dev/null) && [ $retry -gt 0 ] ; do echo "retrying curl, attempts remaining: $retry"; retry=$((retry-1)); if [ $retry -eq 0 ]; then echo "fail"; exit 1; fi; sleep 5; done'
+            docker-compose down
+      - run:
+           name: "Failure: output container logs to console"
+           command: |
+             docker-compose logs
+           when: on_fail
 workflows:
   version: 2
   build:
@@ -70,3 +89,4 @@ workflows:
       - test_server:
           requires:
           - prepare
+      - main

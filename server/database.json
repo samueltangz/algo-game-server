@@ -1,7 +1,7 @@
 {
   "dev": {
     "driver": "mysql",
-    "host": "localhost",
+    "host": "mysql",
     "user": "algo-dev",
     "password": "development",
     "database": "algo_development"
