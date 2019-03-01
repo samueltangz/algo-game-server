@@ -70,6 +70,11 @@ jobs:
           name: Verify docker compose build
           command: |
             cd server
+            export MYSQL_HOST=${MYSQL_HOST}
+            export MYSQL_DATABASE=${MYSQL_DATABASE}
+            export MYSQL_USER=${MYSQL_USER}
+            export MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            export MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
             docker-compose up -d
             docker exec algo_server bash -c 'retry=12; while ! (curl -s --fail -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'http://127.0.0.1:3000/users/top10' > /dev/null) && [ $retry -gt 0 ] ; do echo "retrying curl, attempts remaining: $retry"; retry=$((retry-1)); if [ $retry -eq 0 ]; then echo "fail"; exit 1; fi; sleep 5; done'
             docker-compose down
