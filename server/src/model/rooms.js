@@ -1,40 +1,118 @@
 /* global con */
+const { roomStatus } = require('./constants')
 
-async function createRoom () {
-  const id = await new Promise((resolve, reject) => {
-    con.query('INSERT INTO rooms (id, status, user_count, ready_user_count) VALUES (NULL, 0, 1, 0)', function (err, result) {
-      if (err) return reject(err)
-      if (result.affectedRows !== 1) return reject(new Error('cannot create room'))
-      resolve(result.insertId)
-    })
-  })
-  return findRoomById(id)
+/**
+ * Convert the room status constants to string.
+ * @param {number} status The room status.
+ * @returns {string} The string representation of the room status.
+ */
+function roomStatusToString (status) {
+  switch (status) {
+    case roomStatus.WAITING: return 'waiting'
+    case roomStatus.PREPARE: return 'prepare'
+    case roomStatus.PLAYING: return 'playing'
+    default: throw new Error('undefined status')
+  }
 }
 
-async function listRooms () {
+/**
+ * Convert the string representation of room status into string.
+ * @param {string} strStatus The string representation of the room status.
+ * @returns {number} The room status.
+ */
+function stringToRoomStatus (strStatus) {
+  switch (strStatus) {
+    case 'waiting': return roomStatus.WAITING
+    case 'prepare': return roomStatus.PREPARE
+    case 'playing': return roomStatus.PLAYING
+    default: throw new Error('undefined status')
+  }
+}
+
+/**
+ * Convert the room object for database to a JS object.
+ * @param {object} dbRoom The room object for database.
+ * @returns {object} The room object for JS.
+ */
+function marshal (dbRoom) {
+  return {
+    id: dbRoom['id'],
+    status: roomStatusToString(dbRoom['status']),
+    userCount: dbRoom['user_count'],
+    readyUserCount: dbRoom['ready_user_count']
+  }
+}
+
+/**
+ * Convert the room object for JS to a database object.
+ * @param {object} objRoom The room object for JS.
+ * @returns {object} The room object for database.
+ */
+function unmarshal (objRoom) {
+  return {
+    'id': objRoom.id,
+    'status': stringToRoomStatus(objRoom.status),
+    'user_count': objRoom.userCount,
+    'ready_user_count': objRoom.readyUserCount
+  }
+}
+
+/**
+ * Create a room and returns the room object.
+ * @returns {object} The marshaled room object.
+ */
+async function create () {
+  const id = await new Promise((resolve, reject) => {
+    con.query('INSERT INTO `rooms` (`id`, `status`, `user_count`, `ready_user_count`) VALUES (NULL, 0, 1, 0)',
+      function (err, result) {
+        if (err) return reject(err)
+        if (result.affectedRows !== 1) return reject(new Error('cannot create room'))
+        resolve(result.insertId)
+      }
+    )
+  })
+  const room = await findById(id)
+  return room
+}
+
+/**
+ * List the rooms exist in the current state.
+ * @returns {array[object]} An array of marshaled room objects.
+ */
+async function findAll () {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM rooms', function (err, rooms, _) {
       if (err) return reject(err)
-      resolve(rooms)
+      resolve(rooms.map(marshal))
     })
   })
 }
 
-async function findRoomById (id) {
+/**
+ * Find a room with given room id.
+ * @param {number} id The room id.
+ * @returns {object} The marshaled room object.
+ */
+async function findById (id) {
   return new Promise((resolve, reject) => {
-    con.query('SELECT * FROM rooms WHERE id = ? LIMIT 1', [ id ], function (err, rooms, _) {
+    con.query('SELECT * FROM `rooms` WHERE `id` = ? LIMIT 1', [ id ], function (err, rooms, _) {
       if (err) return reject(err)
-      if (rooms.length !== 1) return reject(new Error('room not found'))
-      resolve(rooms[0])
+      if (rooms.length !== 1) return reject(new Error('cannot find room'))
+      resolve(marshal(rooms[0]))
     })
   })
 }
 
-async function findRoomsByStatus (status) {
+/**
+ * Find all rooms with given status.
+ * @param {number} status
+ * @return {array[object]} An array of marshaled room objects.
+ */
+async function findAllByStatus (status) {
   return new Promise((resolve, reject) => {
     con.query('SELECT * FROM rooms WHERE status = ?', [ status ], function (err, rooms, _) {
       if (err) return reject(err)
-      resolve(rooms)
+      resolve(rooms.map(marshal))
     })
   })
 }
@@ -47,7 +125,7 @@ async function deltaUserCount (id, delta) {
       resolve()
     })
   })
-  return findRoomById(id)
+  return findById(id)
 }
 
 async function deltaReadyUserCount (id, delta) {
@@ -58,7 +136,7 @@ async function deltaReadyUserCount (id, delta) {
       resolve()
     })
   })
-  return findRoomById(id)
+  return findById(id)
 }
 
 async function updateRoomStatus (id, status) {
@@ -69,7 +147,7 @@ async function updateRoomStatus (id, status) {
       resolve()
     })
   })
-  return findRoomById(id)
+  return findById(id)
 }
 
 async function deleteRoom (id) {
@@ -83,10 +161,15 @@ async function deleteRoom (id) {
 }
 
 module.exports = {
-  createRoom,
-  listRooms,
-  findRoomById,
-  findRoomsByStatus,
+  roomStatusToString,
+  stringToRoomStatus,
+  marshal,
+  unmarshal,
+
+  create,
+  findAll,
+  findById,
+  findAllByStatus,
   deltaUserCount,
   deltaReadyUserCount,
   updateRoomStatus,

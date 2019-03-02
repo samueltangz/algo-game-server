@@ -5,21 +5,6 @@ const { intToBoolean } = require('../utils/utils')
 const model = require('../model')
 const config = require('../config')
 
-const roomStatus = {
-  WAITING: 0,
-  PREPARE: 1,
-  PLAYING: 2
-}
-
-function roomStatusToString (status) {
-  switch (status) {
-    case roomStatus.WAITING: return 'waiting'
-    case roomStatus.PREPARE: return 'prepare'
-    case roomStatus.PLAYING: return 'playing'
-    default: throw new Error('undefined status')
-  }
-}
-
 async function isUserJoinedRoom (userId) {
   try {
     await model.findRoomUserByUserId(userId)
@@ -174,23 +159,10 @@ async function updateReady (user, isReady) {
   }
 }
 
-function marshalRoom (dbRoom) {
-  return {
-    id: dbRoom['id'],
-    status: roomStatusToString(dbRoom['status']),
-    userCount: dbRoom['user_count']
-  }
-}
-
 module.exports = {
-  roomStatus,
-  roomStatusToString,
-
   listRooms,
   createAndJoinRoom,
   joinRoom,
   leaveRoom,
-  updateReady,
-
-  marshalRoom
+  updateReady
 }
